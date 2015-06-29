@@ -1,0 +1,39 @@
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.exe.config
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.exe
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.pdb
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Controls.QueryUI.resources
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Properties.Resources.resources
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite V3.exe
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite V3.pdb
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Forms.frmMain.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.exe.config
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite V3.exe
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite V3.pdb
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Controls.QueryUI.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Forms.Feedback.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Forms.frmMain.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Properties.Resources.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.exe
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.pdb
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Forms.Feedback.resources
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Debug\QLite2.xml
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Dialogs.ServerLogin.resources
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.exe.config
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite V3.exe
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite V3.csprojResolveAssemblyReference.cache
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Controls.QueryUI.resources
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Dialogs.ServerLogin.resources
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Forms.Feedback.resources
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Forms.frmMain.resources
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite.Properties.Resources.resources
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite V3.csproj.GenerateResource.Cache
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\bin\Debug\QLite2.xml
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.exe
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\bin\Debug\QLite V3.pdb
+C:\Users\jon.reed\Documents\Visual Studio 2012\Projects\QLite V3\QLite V3\obj\x86\Debug\QLite V3.pdb

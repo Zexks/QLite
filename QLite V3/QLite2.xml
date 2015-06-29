@@ -1,0 +1,2165 @@
+<QLite>
+  <Queries>
+    <Query Title="Trial Balance Table" Type="3" Index="0"><![CDATA[Select * FROM trialbalance]]></Query>
+    <Query Title="Archived Binder List" Type="2" Index="1"><![CDATA[SELECT b.bndindex, b.name, b.bid, c.clientid, b.clnt, c.name AS [clientname], s.firstname, s.lastname, cfrname, ServerName
+FROM binder AS b 
+INNER JOIN client AS c
+ON b.clnt = c.clientguid
+INNER JOIN staff AS s
+ON b.archivedby = s.staffguid
+INNER JOIN cfr AS cf
+IN b.cfrid = cfrguid
+INNER JOIN cfrserver AS cfs
+ON cf.serverguid = cfs.serverguid
+			]]></Query>
+    <Query Title="Client Binder List" Type="2" Index="2"><![CDATA[SELECT c.clientid, c.name as [clientname], b.bndindex, b.name AS [bindername], b.bid, b.dtdeliv, cf.cfrname, s.ServerName
+FROM binder AS b
+INNER JOIN client AS c
+ON b.clnt = c.clientguid
+INNER JOIN cfr AS cf
+ON b.cfrid = cf.cfrguid
+INNER JOIN cfrserver AS s
+ON cf.serverguid = s.serverguid
+ORDER BY b.name
+			]]></Query>
+    <Query Title="Unarchived Binder List" Type="2" Index="3"><![CDATA[SELECT b.bndindex, b.name as [bindername], b.bid, c.clientid, c.name as [clientname], cfr.cfrname
+FROM cfr_client AS cc
+INNER JOIN binder AS b
+ON b.clnt = cc.clientguid
+INNER JOIN cfr AS cfr
+ON cc.cfrguid = cfr.cfrguid
+INNER JOIN client AS c
+ON cc.clientguid = c.clientguid
+WHERE b.status != '2'
+ORDER BY b.name
+			]]></Query>
+    <Query Title="Shared LFRs" Type="2" Index="4"><![CDATA[SELECT s.login, l.lfrguid, l.staffguid 
+FROM Lfr AS l JOIN Staff AS s 
+ON l.staffguid = s.staffguid
+ORDER BY s.login
+			]]></Query>
+    <Query Title="Staff - Staffguid - LFRGuid" Type="2" Index="0"><![CDATA[SELECT login, lfrguid, s.staffguid 
+FROM Staff AS s 
+JOIN Lfr ON s.staffguid = lfr.staffguid 
+WHERE active = 'true'
+ORDER BY Login
+			]]></Query>
+    <Query Title="#of clients in LFR" Type="2" Index="5"><![CDATA[DECLARE @LFRGUID AS varchar(40)
+SELECT @LFRGUID = '{0}'
+SELECT count(clientguid) AS clients 
+FROM LFR_Client where lfrguid = @lfrguid
+			]]><Var Default="eee54d5e-a915-433e-b9e7-d3852be2c411"><![CDATA[LFR GUID:]]></Var></Query>
+    <Query Title="#of Binders in LFR" Type="2" Index="6"><![CDATA[SELECT COUNT(bid) 
+FROM Binder as b 
+JOIN LFR on b.lfrguid = lfr.lfrguid 
+WHERE b.lfrguid = '{0}'
+			]]><Var Default="eee54d5e-a915-433e-b9e7-d3852be2c411"><![CDATA[LFR GUID:]]></Var></Query>
+    <Query Title="Find LFR TB by TB-GUID" Type="3" Index="1"><![CDATA[SELECT 
+LAS.login AS 'Staff Login',
+LAB.lfrguid AS 'LFR GUID',
+LAC.clientid as 'Client Name',
+LAB.name AS 'Binder Name',
+LAB.bid AS 'Binder Guid',
+LBTAB.Name AS 'Tab Name',
+LBTAB.Tab AS 'Tab GUID',
+LBDOC.name AS 'TB Name',
+TBLATB.TrialBalanceIntID AS 'TB Integer ID',
+LBDOC.did AS 'WP GUID',
+LBTB.TrialBalanceGuid AS 'TB GUID'
+FROM [{0}]..Doc AS LBDOC
+JOIN [{0}]..TrialBalance AS LBTB ON LBDOC.did = LBTB.did
+AND LBDOC.bid = LBTB.bid
+JOIN [LocalAdmin]..Binder AS LAB ON LBDOC.bid = LAB.bid
+JOIN [{0}]..Tab AS LBTAB ON  LBTAB.tab = LBDOC.tab
+AND LBTAB.bid = LAB.bid
+AND LBTAB.LfrGuid = LAB.LfrGuid
+JOIN [LocalAdmin]..Client AS LAC ON LAB.clnt = LAC.clientguid
+JOIN [LocalAdmin]..LFR AS LALFR ON LAB.lfrguid = LALFR.lfrguid
+JOIN [LocalAdmin]..Staff AS LAS ON LALFR.staffguid = LAS.staffguid
+JOIN [TB_LocalAdmin]..TrialBalance AS TBLATB ON LBTB.TrialBalanceGuid = TBLATB.TrialBalanceGuid
+
+WHERE LBTB.TrialBalanceGuid = '{1}'
+			]]><Var Default="LocalBin Here"><![CDATA[Local Bin Database Name:]]></Var><Var Default="TB Guid Here"><![CDATA[Trial Balance GUID:]]></Var></Query>
+    <Query Title="Find LFR TB by DID" Type="3" Index="2"><![CDATA[SELECT 
+LAS.login AS 'Staff Login',
+LAB.lfrguid AS 'LFR GUID',
+LAC.clientid as 'Client Name',
+LAB.name AS 'Binder Name',
+LAB.bid AS 'Binder Guid',
+LBTAB.Name AS 'Tab Name',
+LBTAB.Tab AS 'Tab GUID',
+LBDOC.name AS 'TB Name',
+LBTB.TrialBalanceIntID AS 'TB Integer ID',
+LBDOC.did AS 'WP GUID',
+LBTB.TrialBalanceGuid AS 'TB GUID'
+FROM [{0}]..Doc AS LBDOC
+JOIN [{0}]..TrialBalance AS LBTB ON LBDOC.did = LBTB.did
+AND LBDOC.bid = LBTB.bid
+JOIN [LocalAdmin]..Binder AS LAB ON LBDOC.bid = LAB.bid
+JOIN [{0}]..Tab AS LBTAB ON  LBTAB.tab = LBDOC.tab
+AND LBTAB.bid = LAB.bid
+AND LBTAB.LfrGuid = LAB.LfrGuid
+JOIN [LocalAdmin]..Client AS LAC ON LAB.clnt = LAC.clientguid
+JOIN [LocalAdmin]..LFR AS LALFR ON LAB.lfrguid = LALFR.lfrguid
+JOIN [LocalAdmin]..Staff as LAS ON LALFR.staffguid = LAS.staffguid
+JOIN [TB_LocalAdmin]..TrialBalance AS TBLATB ON LBTB.TrialBalanceGuid = TBLATB.TrialBalanceGuid
+
+WHERE LBTB.did = '{1}'
+			]]><Var Default="!Local DB Name Here!"><![CDATA[Local Bin DB Name:]]></Var><Var Default="!TB Document ID Here!"><![CDATA[Trail Balance Document ID:]]></Var></Query>
+    <Query Title="Find CFR TB by TB-GUID" Type="3" Index="3"><![CDATA[SELECT 
+CAS.login AS 'Staff Login',
+CAB.lfrguid AS 'LFR GUID',
+CAC.clientid as 'Client Name',
+CAB.name AS 'Binder Name',
+CAB.bid AS 'Binder Guid',
+CBTAB.Name AS 'Tab Name',
+CBTAB.Tab AS 'Tab GUID',
+CBDOC.name AS 'TB Name',
+CBTB.TrialBalanceIntID AS 'TB Integer ID',
+CBDOC.did AS 'WP GUID',
+CBTB.TrialBalanceGuid AS 'TB GUID'
+FROM [{0}]..Doc AS CBDOC
+JOIN [{0}]..TrialBalance AS CBTB ON CBDOC.did = CBTB.did
+AND CBDOC.bid = CBTB.bid
+JOIN [CentralAdmin]..Binder AS CAB ON CBDOC.bid = CAB.bid
+JOIN [{0}]..Tab AS CBTAB ON  CBTAB.tab = CBDOC.tab
+AND CBTAB.bid = CAB.bid
+AND CBTAB.LfrGuid = CAB.LfrGuid
+JOIN [CentralAdmin]..Client AS CAC ON CAB.clnt = CAC.clientguid
+JOIN [CentralAdmin]..LFR AS LALFR ON CAB.lfrguid = LALFR.lfrguid
+JOIN [CentralAdmin]..Staff as CAS ON LALFR.staffguid = CAS.staffguid
+JOIN [TB_CentralAdmin]..TrialBalance AS TBLATB ON CBTB.TrialBalanceGuid = TBLATB.TrialBalanceGuid
+
+WHERE CBTB.TrialBalanceGuid = '{1}'
+			]]><Var Default="!Central DB Name Here!"><![CDATA[Central Bin DB Name:]]></Var><Var Default="!TB Document ID Here!"><![CDATA[Trail Balance GUID:]]></Var></Query>
+    <Query Title="Find CFR TB by DID" Type="3" Index="4"><![CDATA[SELECT 
+CAS.login AS 'Staff Login',
+CAB.lfrguid AS 'LFR GUID',
+CAC.clientid as 'Client Name',
+CAB.name AS 'Binder Name',
+CAB.bid AS 'Binder Guid',
+CBTAB.Name AS 'Tab Name',
+CBTAB.Tab AS 'Tab GUID',
+CBDOC.name AS 'TB Name',
+CBTB.TrialBalanceIntID AS 'TB Integer ID',
+CBDOC.did AS 'WP GUID',
+CBTB.TrialBalanceGuid AS 'TB GUID'
+FROM [{0}]..Doc AS CBDOC
+JOIN [{0}]..TrialBalance AS CBTB ON CBDOC.did = CBTB.did
+AND CBDOC.bid = CBTB.bid
+JOIN [CentralAdmin]..Binder AS CAB ON CBDOC.bid = CAB.bid
+JOIN [{0}]..Tab AS CBTAB ON  CBTAB.tab = CBDOC.tab
+AND CBTAB.bid = CAB.bid
+AND CBTAB.LfrGuid = CAB.LfrGuid
+JOIN [CentralAdmin]..Client AS CAC ON CAB.clnt = CAC.clientguid
+JOIN [CentralAdmin]..LFR AS LALFR ON CAB.lfrguid = LALFR.lfrguid
+JOIN [CentralAdmin]..Staff as CAS ON LALFR.staffguid = CAS.staffguid
+JOIN [TB_CentralAdmin]..TrialBalance AS TBLATB ON CBTB.TrialBalanceGuid = TBLATB.TrialBalanceGuid
+
+WHERE CBTB.did = '{1}'
+			]]><Var Default="!Central DB Name Here!"><![CDATA[Central Bin DB Name:]]></Var><Var Default="!TB Document ID Here!"><![CDATA[Trail Balance Document ID:]]></Var></Query>
+    <Query Title="Create Staff" Type="0" Index="0"><![CDATA[DECLARE @totalstaff int
+
+--CHANGE THIS VALUE
+SELECT @totalstaff = {0}
+
+DECLARE @staffguid varchar(38)
+DECLARE @login varchar(32)
+DECLARE @lastname varchar(32)
+DECLARE @firstname varchar(32)
+DECLARE @staffinitial varchar(8)
+DECLARE @adminguid varchar(38)
+DECLARE @NULLguid varchar(38)
+DECLARE @allfirmteamguid varchar(38)
+DECLARE @wmlicense varchar(38)
+DECLARE @tblicense varchar(38)
+DECLARE @staffnum int
+DECLARE @UniqueID int
+
+SET NOCOUNT ON
+
+USE Tempdb
+USE Centraladmin
+
+SELECT @NULLguid = '00000000-0000-0000-0000-000000000000'
+SELECT @adminguid = '420A97F0-7939-11D4-BD34-0050DAB66630'
+SELECT @allfirmteamguid = '8A62EED1-1E3E-44FB-9352-E4EC5D7092F2'
+SELECT @wmlicense = '420A9900-7939-11D4-BD34-0050DAB66630'
+SELECT @tblicense = '420A9901-7939-11D4-BD34-0050DAB66630'
+SELECT @UniqueID = '{1}'
+
+SELECT @staffnum = 0
+WHILE @staffnum < @totalstaff
+BEGIN
+SELECT @staffnum = @staffnum + 1
+
+SELECT @staffguid = newid()
+SELECT @login = ltrim(str(@UniqueID)) + 'STAFF' + ltrim(str(@staffnum))
+SELECT @lastname = ltrim(str(@UniqueID)) + 'Staff' + ltrim(str(@staffnum))
+SELECT @firstname = ltrim(str(@UniqueID)) + 'Staff' + ltrim(str(@staffnum))
+SELECT @staffinitial = ltrim(str(@UniqueID)) + 'S' + ltrim(str(@staffnum))
+
+--Insert the staff record
+INSERT INTO Staff(staffguid, stafftitleid, departmentid, login, pwd, lastname, firstname, staffinitial, personaltitle, jobtitle, ssn, workemail, homeemail, active, builtin, machinename, createdby, createddate, archive, lastchangedby, lastchangeddate, HomeCFRServer, TRNLogin, TRNPassword, dbflag, version, ARMLoginID, ARMPassword)
+VALUES (@staffguid, 0, 0, @login, '', @lastname, @firstname, @staffinitial, '', '', '', '', '', 1, 0, '', @adminguid, getutcdate(), '', @adminguid, getutcdate(), @NULLguid, '', '', 64, 0, '', '')
+
+--Insert the staff_group record
+INSERT INTO Staff_RightsGroup(staffguid, rightsgroupid, lastchangeddate, dbflag, rights_no)
+VALUES (@staffguid, 0, getutcdate(), 0, 0)
+
+--Add the staff to the all firm team 
+INSERT INTO Staff_Team(teamguid, staffguid, dbflag, lastchangeddate)
+VALUES (@allfirmteamguid, @staffguid, 64, getutcdate())
+
+--Add Staff Into History record
+INSERT INTO StaffInfoHistory(StaffInfoGUID, StaffGuid, StartDate, LastName, MiddleName, StaffInitial, FirstName)
+VALUES (@staffguid, @staffguid, getutcdate(), @lastname, '', @staffinitial, @firstname)
+
+--Assign WM license
+INSERT INTO License (licenseguid, staffguid, licensetypeid, dbflag, lastchangeddate)
+VALUES (newid(), @staffguid, @wmlicense, 0, getutcdate())
+
+--Assign TB license
+INSERT INTO License (licenseguid, staffguid, licensetypeid, dbflag, lastchangeddate)
+VALUES (newid(), @staffguid, @tblicense, 0, getutcdate())
+				END]]><Var Default="5"><![CDATA[Number of staff to create (default=5):]]></Var><Var Default="0"><![CDATA[Staff ID Number (default=0):]]></Var></Query>
+    <Query Title="Reset Admin" Type="1" Index="0"><![CDATA[SET QUOTED_IDENTIFIER OFF
+SET NOCOUNT ON
+USE MASTER
+GO
+
+DECLARE @DBPath 		VARCHAR(256)
+DECLARE @DBBackupFileName	VARCHAR(256)
+DECLARE @DataFileName		VARCHAR(256)
+DECLARE @LogFileName		VARCHAR(256)
+DECLARE @DBSizeIsLimited	BIT
+DECLARE @MaxDBSizeInMB		INT
+DECLARE @MaxBinders		INT
+DECLARE @BinGuid		UNIQUEIDENTIFIER
+DECLARE @BinDBName 		VARCHAR(256)
+DECLARE @BinLDF			VARCHAR(256)
+DECLARE @BinMDF			VARCHAR(256)
+DECLARE @BinName		VARCHAR(20)
+DECLARE @MDBSize		INT
+DECLARE @RetVal			INT
+DECLARE @shellCmd		NVARCHAR(4000)
+DECLARE @Error			INT
+DECLARE @ERRORMsg		VARCHAR(4000)
+
+--Drop Existing CentralAdmin Database and all of its bins
+IF EXISTS ( SELECT * FROM master..sysdatabases WHERE Name = 'CentralAdmin')
+BEGIN
+	IF OBJECT_ID('CentralAdmin..Bin', 'U') IS NOT NULL
+	BEGIN
+		DECLARE Bin_Cursor CURSOR LOCAL FOR SELECT BinDBName FROM CentralAdmin..Bin
+		OPEN Bin_Cursor
+		FETCH NEXT FROM Bin_Cursor INTO @BinDBName
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+			IF EXISTS (SELECT * FROM master..sysdatabases WHERE name =@BinDBName )
+			BEGIN
+				EXEC('DROP DATABASE [' + @BinDBName + ']')
+				IF @@ERROR <> 0
+					RAISERROR('Can Not Drop the Bin Dataabse',1, 16)
+			END
+			FETCH NEXT FROM Bin_Cursor INTO @BinDBName
+		END
+		CLOSE Bin_Cursor
+		DEALLOCATE Bin_Cursor
+	END
+	DROP DATABASE CentralAdmin
+	IF @@ERROR <> 0
+		RAISERROR('Failed to Drop the CentralAdmin Database', 1, 16)
+END
+
+--Get the Database Path from the registry
+EXEC master..xp_regread 'HKEY_LOCAL_MACHINE' , 'SOFTWARE\ProFxENGAGEMENT30\Admin', 'DatabasePath', @DBPath OUTPUT 
+
+IF RIGHT(@DBpath,1) <> '\'
+	Select @DBpath = @DBpath + '\'
+
+--Restore CentralAdmin from Blank Backup
+SELECT @DBBackupFileName = @DBpath + 'AdminModel.dmp', @DataFileName = @DBpath + 'Admin_Data.MDF',@LogFileName = @DBpath + 'Central_Log.LDF'
+RESTORE DATABASE CentralAdmin FROM DISK = @DBBackupFileName WITH MOVE 'LocalAdmin_Data' TO @DataFileName, MOVE 'LocalAdmin_Log' TO @LogFileName
+
+USE CENTRALADMIN
+UPDATE LU_FileRoomType SET FileRoomType = 1, Description = 'CentralAdmin'
+
+--CREATE INITIAL BIN
+SELECT 	@DBSizeIsLimited = CASE CAST(SERVERPROPERTY('Edition')  AS VARCHAR(255))
+				WHEN 'Desktop Engine' 			THEN 1
+				WHEN 'Personal Edition'			THEN 1
+				WHEN 'Developer Edition'		THEN 0
+				WHEN 'Enterprise Edition'		THEN 0
+				WHEN 'Standard Edition'			THEN 0
+				WHEN 'Enterprise Evaluation Edition'	THEN 0
+				ELSE 1
+				END
+	,@MaxDBSizeInMB	= CASE CAST(SERVERPROPERTY('Edition')  AS VARCHAR(255))
+				WHEN 'Desktop Engine' 			THEN 2048
+				WHEN 'Personal Edition'			THEN 2048
+				WHEN 'Developer Edition'		THEN 0x7FFFFFFF
+				WHEN 'Enterprise Edition'		THEN 0x7FFFFFFF
+				WHEN 'Standard Edition'			THEN 0x7FFFFFFF
+				WHEN 'Enterprise Evaluation Edition'	THEN 0x7FFFFFFF
+				ELSE 2048
+			  END
+SELECT 	@MaxBinders 	= CASE @DBSizeIsLimited
+				WHEN 1	THEN 3000
+				WHEN 0	THEN 0x7FFFFFFF
+			  END
+
+UPDATE BinConfiguration
+	   SET   ServerID 		= 1
+		,ServerName     	= CAST(SERVERPROPERTY('ServerName') AS VARCHAR(255))
+		,SingleBin        	= CASE @DBSizeIsLimited
+						WHEN 1	THEN 0
+						WHEN 0	THEN 1
+					  END
+		,DBSizeIsLimited	= @DBSizeIsLimited
+		,MaxDBSizeInMB         	= @MaxDBSizeInMB
+		,MaxBinders		= @MaxBinders
+		,LastChangedDate       	= GETUTCDATE()
+		,WarnThreshold		= CASE @DBSizeIsLimited
+						WHEN 0 THEN 0x7FFFFFFF
+						ELSE 
+							CASE @MaxDBSizeInMB
+								WHEN 2048 THEN 1434
+								ELSE CAST(FLOOR(@MaxDBSizeInMB * 0.65) AS INT)
+						END
+					  END
+		,AlertThreshold		= CASE @DBSizeIsLimited
+						WHEN 0 THEN 0x7FFFFFFF
+						ELSE
+							CASE @MaxDBSizeInMB
+								WHEN 2048 THEN 1792
+								ELSE CAST(FLOOR(@MaxDBSizeInMB * 0.75) AS INT)
+							END
+					  END
+		,BinderCreationTimeOut	= 10
+		,BinCreationTimeOut	= 2
+
+SELECT @BinGuid   = NEWID()
+SELECT @BinDBName = 'CentralBin_' + CAST(@BinGuid AS VARCHAR(40))
+SELECT @BinMDF = @DBpath + @BinDBName + '_Data.MDF', @BinLDF = @DBpath + @BinDBName + '_Log.LDF'
+
+--Copy Blank Bin
+SELECT	@shellCmd = 'copy "' + @DBpath + 'Bin_Model_Data' + '" "'+ @BinMDF + '"'
+EXEC	@Error = master..xp_cmdshell @shellCmd
+SELECT	@shellCmd = 'copy "' + @DBpath + 'Bin_Model_Log' + '" "'+ @BinLDF + '"'
+EXEC	@Error = master..xp_cmdshell @shellCmd
+
+--Attach the bin
+EXEC @ERROR = SP_ATTACH_DB @BinDBName ,@BinMDF, @BinLDF
+	
+IF ( @ERROR <> 0 )
+	RAISERROR ('Failed to Attach the Bin.', 16, 1)
+ELSE
+BEGIN
+
+	EXEC @Error = USP_SetDefaultBinDBOptions @BinDBName
+	IF @Error <> 0
+	BEGIN
+		SELECT @ERRORMsg = 'Failed to Set the Default Bin DB Options: Error = ''' + CAST(@Error AS VARCHAR(20)) + '''.'
+		GOTO ERROR_HANDLING
+	END
+
+	BEGIN TRAN
+	EXEC ('UPDATE [' + @BinDBName + ']..LU_FileRoomType SET FileRoomType = 1,Description = ''CentralAdmin''')
+
+	EXEC @Error = USP_Admin_BinGetNextBinName @BinName OUTPUT
+
+	IF @@ERROR <> 0
+	BEGIN
+		ROLLBACK TRAN
+		SELECT @ERRORMsg = 'Failed to Get the Next Bin Name.'
+		GOTO ERROR_HANDLING
+	END
+
+	INSERT INTO bin (BinGuid, BinName, BinDBName, ServerGuid, Path, CreateDateTime, LastChangedDate, DBFlag, MDBSize, MaxBinders, Offline, [Full])
+	SELECT @BinGuid, @BinName, @BinDBName, NULL, @DBPath, GETUTCDATE(), GETUTCDATE(), 0, 0, @MaxBinders, 0, 0
+	
+	IF @@ERROR <> 0
+	BEGIN
+		ROLLBACK TRAN
+		SELECT @ERRORMsg = 'Failed to Create the First Bin Database: Can not poplate the bin Table.'
+		GOTO ERROR_HANDLING
+	END
+
+	UPDATE BinConfiguration SET ActiveBin = @BinGuid, BinCreationStatus = 1
+
+	IF @@ERROR <> 0
+	BEGIN
+		ROLLBACK TRAN
+		SELECT @ERRORMsg = 'Failed to Create the First Bin Database: Can not update BinConfiguration table.'
+		GOTO ERROR_HANDLING
+	END
+
+	--Update the Bin Database space usage
+	EXEC @Error = USP_Admin_BinUpdateSpaceUsageByKey @BinGuid, @MDBSize OUTPUT, @RetVal OUTPUT
+		
+	IF @ERROR <> 0 OR @RetVal <> 0
+	BEGIN
+		ROLLBACK TRAN
+		SELECT @ERRORMsg = 'Failed to Update the Bin Database space usage.'
+		GOTO ERROR_HANDLING
+	END
+
+	COMMIT TRAN
+	GOTO BINSUCCESS
+END
+ERROR_HANDLING:
+	EXEC('DROP DATABASE [' + @BinDBName + ']')
+	RAISERROR (@ERRORMsg, 16, 1)
+BINSUCCESS:
+
+USE Master
+
+IF EXISTS (SELECT * FROM sysobjects WHERE id = OBJECT_ID('dbo.USPU_StartSQLAgent') AND type = 'P')
+	DROP PROC dbo.USPU_StartSQLAgent
+GO
+
+CREATE PROC dbo.USPU_StartSQLAgent
+AS
+/*
+**	SP Name:		USPU_StartSQLAgent
+**
+**	Database:		Admin
+**
+**	Created:		Shawn Ju
+**				CCH Incorporated
+**
+**	Date:			April 8, 2005
+**
+**	Initial Version:	4.0
+**
+**	Description:		This SP starts the SQL Server Agent on
+**				the instance of PROFXENGAGEMENT
+**
+**	Input:
+**
+**
+**	Output:
+**
+*/
+BEGIN
+
+	SET NOCOUNT ON
+
+	DECLARE  @l_DosCmd	NVARCHAR(1000)
+		,@l_Error	INT
+
+	IF NOT EXISTS (
+		SELECT program_name
+		  FROM master..sysprocesses
+		 WHERE program_name = 'SQLAgent - Generic Refresher'
+	)
+	BEGIN
+		SELECT @l_DosCmd = 'net start "SQLAgent$PROFXENGAGEMENT"'
+		EXEC @l_Error = master..xp_cmdshell @l_DosCmd
+
+		IF @l_Error <> 0
+		BEGIN
+			RAISERROR('USPU_StartSQLAgent Failed, Could not start SQL Agent', 16, 1)
+			RETURN -1
+		END
+	END
+	RETURN
+END
+GO
+
+--	Setup SQL Server Agent startup properties
+SET NOCOUNT ON
+DECLARE  @Error 	INT
+DECLARE  @ERRORMsg	VARCHAR(4000)
+DECLARE  @yDBVersion 	INT
+
+EXEC @Error = msdb.dbo.sp_set_sqlagent_properties @sqlserver_restart = 1, @regular_connections 	= 1, @host_login_name = 'se', @host_login_password = 0x6B9C71F2CB6D3ACEBFE87DD85FA85D95034C6844E4638C056CF76E45874E0959
+IF @Error <> 0
+BEGIN
+	SELECT @ERRORMsg = 'Failed to Set SQL Agent Properties, Error Code: ' + CAST(@Error AS VARCHAR(100))
+	RAISERROR (@ERRORMsg, 16, 1)
+END
+
+IF EXISTS(SELECT * FROM CentralAdmin..yDBVersion WHERE VersionID = 1 AND CAST(SUBSTRING(VersionName, 1, CHARINDEX('.',VersionName)-1) AS INTEGER) >= 4) -- Version 4.0 or later
+BEGIN
+	--	Need to schedule a SQL Job for Bin space calculation
+	EXEC sp_procoption 'USPU_StartSQLAgent', 'startup', 'true'
+
+	EXEC @Error = master..USPU_StartSQLAgent
+	IF @Error <> 0
+	BEGIN
+		SELECT @ERRORMsg = 'Failed to Start SQL Agent, Error Code: ' + CAST(@Error AS VARCHAR(100))
+		RAISERROR (@ERRORMsg, 16, 1)
+	END
+
+	IF OBJECT_ID('CentralAdmin..USP_Admin_BinScheduleSpaceUpdate','P') IS NULL
+	BEGIN
+		RAISERROR('Could not find the Stored Procedure: USP_Admin_BinScheduleSpaceUpdate', 16, 1)
+		GOTO FinishScheduling
+	END
+
+	EXEC @Error = CentralAdmin..USP_Admin_BinScheduleSpaceUpdate '03:00:00', 1440
+	IF @Error <> 0
+	BEGIN
+		SELECT @ErrorMsg = 'Failed to schedule the job to check DB Space, Error: ' + CAST(@Error AS VARCHAR(100))
+		RAISERROR(@ErrorMsg, 16, 1)
+		GOTO FinishScheduling
+	END
+END /* 	@yDBVersion >= 4 */
+FinishScheduling:
+			]]></Query>
+    <Query Title="Reset WM" Type="1" Index="1"><![CDATA[SET QUOTED_IDENTIFIER OFF
+SET NOCOUNT ON
+USE MASTER
+GO
+
+DECLARE @DBPath 		VARCHAR(256)
+DECLARE @DBBackupFileName	VARCHAR(256)
+DECLARE @DataFileName		VARCHAR(256)
+DECLARE @LogFileName		VARCHAR(256)
+DECLARE @DBSizeIsLimited	BIT
+DECLARE @MaxDBSizeInMB		INT
+DECLARE @MaxBinders		INT
+DECLARE @BinGuid		UNIQUEIDENTIFIER
+DECLARE @BinDBName 		VARCHAR(256)
+DECLARE @BinLDF			VARCHAR(256)
+DECLARE @BinMDF			VARCHAR(256)
+DECLARE @BinName		VARCHAR(20)
+DECLARE @MDBSize		INT
+DECLARE @RetVal			INT
+DECLARE @shellCmd		NVARCHAR(4000)
+DECLARE @Error			INT
+DECLARE @ERRORMsg		VARCHAR(4000)
+
+--Drop Existing LocalAdmin Database and all of its bins
+IF EXISTS ( SELECT * FROM master..sysdatabases WHERE Name = 'LocalAdmin')
+BEGIN
+	IF OBJECT_ID('LocalAdmin..Bin', 'U') IS NOT NULL
+	BEGIN
+		DECLARE Bin_Cursor CURSOR LOCAL FOR SELECT BinDBName FROM LocalAdmin..Bin
+		OPEN Bin_Cursor
+		FETCH NEXT FROM Bin_Cursor INTO @BinDBName
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+			IF EXISTS (SELECT * FROM master..sysdatabases WHERE name =@BinDBName )
+			BEGIN
+				EXEC('DROP DATABASE [' + @BinDBName + ']')
+				IF @@ERROR <> 0
+					RAISERROR('Can Not Drop the Bin Dataabse',1, 16)
+			END
+			FETCH NEXT FROM Bin_Cursor INTO @BinDBName
+		END
+		CLOSE Bin_Cursor
+		DEALLOCATE Bin_Cursor
+	END
+	DROP DATABASE LocalAdmin
+	IF @@ERROR <> 0
+		RAISERROR('Failed to Drop the LocalAdmin Database', 1, 16)
+END
+
+--Get the Database Path from the registry
+EXEC master..xp_regread 'HKEY_LOCAL_MACHINE' , 'SOFTWARE\ProFxENGAGEMENT30\WM', 'DatabasePath', @DBPath OUTPUT 
+
+IF RIGHT(@DBpath,1) <> '\'
+	Select @DBpath = @DBpath + '\'
+
+--Restore LocalAdmin from Blank Backup
+SELECT @DBBackupFileName = @DBpath + 'AdminModel.dmp', @DataFileName = @DBpath + 'Admin_Data.MDF',@LogFileName = @DBpath + 'Local_Log.LDF'
+RESTORE DATABASE LocalAdmin FROM DISK = @DBBackupFileName WITH MOVE 'LocalAdmin_Data' TO @DataFileName, MOVE 'LocalAdmin_Log' TO @LogFileName
+
+USE LocalAdmin
+UPDATE LU_FileRoomType SET FileRoomType = 0, Description = 'LocalAdmin'
+
+--CREATE INITIAL BIN
+SELECT 	@DBSizeIsLimited = CASE CAST(SERVERPROPERTY('Edition')  AS VARCHAR(255))
+				WHEN 'Desktop Engine' 			THEN 1
+				WHEN 'Personal Edition'			THEN 1
+				WHEN 'Developer Edition'		THEN 0
+				WHEN 'Enterprise Edition'		THEN 0
+				WHEN 'Standard Edition'			THEN 0
+				WHEN 'Enterprise Evaluation Edition'	THEN 0
+				ELSE 1
+				END
+	,@MaxDBSizeInMB	= CASE CAST(SERVERPROPERTY('Edition')  AS VARCHAR(255))
+				WHEN 'Desktop Engine' 			THEN 2048
+				WHEN 'Personal Edition'			THEN 2048
+				WHEN 'Developer Edition'		THEN 0x7FFFFFFF
+				WHEN 'Enterprise Edition'		THEN 0x7FFFFFFF
+				WHEN 'Standard Edition'			THEN 0x7FFFFFFF
+				WHEN 'Enterprise Evaluation Edition'	THEN 0x7FFFFFFF
+				ELSE 2048
+			  END
+SELECT 	@MaxBinders 	= CASE @DBSizeIsLimited
+				WHEN 1	THEN 3000
+				WHEN 0	THEN 0x7FFFFFFF
+			  END
+
+UPDATE BinConfiguration
+	   SET   ServerID 		= 1
+		,ServerName     	= CAST(SERVERPROPERTY('ServerName') AS VARCHAR(255))
+		,SingleBin        	= CASE @DBSizeIsLimited
+						WHEN 1	THEN 0
+						WHEN 0	THEN 1
+					  END
+		,DBSizeIsLimited	= @DBSizeIsLimited
+		,MaxDBSizeInMB         	= @MaxDBSizeInMB
+		,MaxBinders		= @MaxBinders
+		,LastChangedDate       	= GETUTCDATE()
+		,WarnThreshold		= CASE @DBSizeIsLimited
+						WHEN 0 THEN 0x7FFFFFFF
+						ELSE 
+							CASE @MaxDBSizeInMB
+								WHEN 2048 THEN 1434
+								ELSE CAST(FLOOR(@MaxDBSizeInMB * 0.65) AS INT)
+						END
+					  END
+		,AlertThreshold		= CASE @DBSizeIsLimited
+						WHEN 0 THEN 0x7FFFFFFF
+						ELSE
+							CASE @MaxDBSizeInMB
+								WHEN 2048 THEN 1792
+								ELSE CAST(FLOOR(@MaxDBSizeInMB * 0.75) AS INT)
+							END
+					  END
+		,BinderCreationTimeOut	= 10
+		,BinCreationTimeOut	= 2
+
+SELECT @BinGuid   = NEWID()
+SELECT @BinDBName = 'LocalBin_' + CAST(@BinGuid AS VARCHAR(40))
+SELECT @BinMDF = @DBpath + @BinDBName + '_Data.MDF', @BinLDF = @DBpath + @BinDBName + '_Log.LDF'
+
+--Copy Blank Bin
+SELECT	@shellCmd = 'copy "' + @DBpath + 'Bin_Model_Data' + '" "'+ @BinMDF + '"'
+EXEC	@Error = master..xp_cmdshell @shellCmd
+SELECT	@shellCmd = 'copy "' + @DBpath + 'Bin_Model_Log' + '" "'+ @BinLDF + '"'
+EXEC	@Error = master..xp_cmdshell @shellCmd
+
+--Attach the bin
+EXEC @ERROR = SP_ATTACH_DB @BinDBName ,@BinMDF, @BinLDF
+	
+IF ( @ERROR <> 0 )
+	RAISERROR ('Failed to Attach the Bin.', 16, 1)
+ELSE
+BEGIN
+
+	EXEC @Error = USP_SetDefaultBinDBOptions @BinDBName
+	IF @Error <> 0
+	BEGIN
+		SELECT @ERRORMsg = 'Failed to Set the Default Bin DB Options: Error = ''' + CAST(@Error AS VARCHAR(20)) + '''.'
+		GOTO ERROR_HANDLING
+	END
+
+	BEGIN TRAN
+	EXEC ('UPDATE [' + @BinDBName + ']..LU_FileRoomType SET FileRoomType = 0,Description = ''LocalAdmin''')
+
+	EXEC @Error = USP_Admin_BinGetNextBinName @BinName OUTPUT
+
+	IF @@ERROR <> 0
+	BEGIN
+		ROLLBACK TRAN
+		SELECT @ERRORMsg = 'Failed to Get the Next Bin Name.'
+		GOTO ERROR_HANDLING
+	END
+
+	INSERT INTO bin (BinGuid, BinName, BinDBName, ServerGuid, Path, CreateDateTime, LastChangedDate, DBFlag, MDBSize, MaxBinders, Offline, [Full])
+	SELECT @BinGuid, @BinName, @BinDBName, NULL, @DBPath, GETUTCDATE(), GETUTCDATE(), 0, 0, @MaxBinders, 0, 0
+	
+	IF @@ERROR <> 0
+	BEGIN
+		ROLLBACK TRAN
+		SELECT @ERRORMsg = 'Failed to Create the First Bin Database: Can not poplate the bin Table.'
+		GOTO ERROR_HANDLING
+	END
+
+	UPDATE BinConfiguration SET ActiveBin = @BinGuid, BinCreationStatus = 1
+
+	IF @@ERROR <> 0
+	BEGIN
+		ROLLBACK TRAN
+		SELECT @ERRORMsg = 'Failed to Create the First Bin Database: Can not update BinConfiguration table.'
+		GOTO ERROR_HANDLING
+	END
+
+	--Update the Bin Database space usage
+	EXEC @Error = USP_Admin_BinUpdateSpaceUsageByKey @BinGuid, @MDBSize OUTPUT, @RetVal OUTPUT
+		
+	IF @ERROR <> 0 OR @RetVal <> 0
+	BEGIN
+		ROLLBACK TRAN
+		SELECT @ERRORMsg = 'Failed to Update the Bin Database space usage.'
+		GOTO ERROR_HANDLING
+	END
+
+	COMMIT TRAN
+	GOTO BINSUCCESS
+END
+ERROR_HANDLING:
+	EXEC('DROP DATABASE [' + @BinDBName + ']')
+	RAISERROR (@ERRORMsg, 16, 1)
+BINSUCCESS:
+
+USE Master
+
+IF EXISTS (SELECT * FROM sysobjects WHERE id = OBJECT_ID('dbo.USPU_StartSQLAgent') AND type = 'P')
+	DROP PROC dbo.USPU_StartSQLAgent
+GO
+
+CREATE PROC dbo.USPU_StartSQLAgent
+AS
+/*
+**	SP Name:		USPU_StartSQLAgent
+**
+**	Database:		Admin
+**
+**	Created:		Shawn Ju
+**				CCH Incorporated
+**
+**	Date:			April 8, 2005
+**
+**	Initial Version:	4.0
+**
+**	Description:		This SP starts the SQL Server Agent on
+**				the instance of PROFXENGAGEMENT
+**
+**	Input:
+**
+**
+**	Output:
+**
+*/
+BEGIN
+
+	SET NOCOUNT ON
+
+	DECLARE  @l_DosCmd	NVARCHAR(1000)
+		,@l_Error	INT
+
+	IF NOT EXISTS (
+		SELECT program_name
+		  FROM master..sysprocesses
+		 WHERE program_name = 'SQLAgent - Generic Refresher'
+	)
+	BEGIN
+		SELECT @l_DosCmd = 'net start "SQLAgent$PROFXENGAGEMENT"'
+		EXEC @l_Error = master..xp_cmdshell @l_DosCmd
+
+		IF @l_Error <> 0
+		BEGIN
+			RAISERROR('USPU_StartSQLAgent Failed, Could not start SQL Agent', 16, 1)
+			RETURN -1
+		END
+	END
+	RETURN
+END
+GO
+
+--Setup SQL Server Agent startup properties
+SET NOCOUNT ON
+DECLARE  @Error 	INT
+DECLARE  @ERRORMsg	VARCHAR(4000)
+DECLARE  @yDBVersion 	INT
+
+EXEC @Error = msdb.dbo.sp_set_sqlagent_properties @sqlserver_restart = 1, @regular_connections 	= 1, @host_login_name = 'se', @host_login_password = 0x6B9C71F2CB6D3ACEBFE87DD85FA85D95034C6844E4638C056CF76E45874E0959
+IF @Error <> 0
+BEGIN
+	SELECT @ERRORMsg = 'Failed to Set SQL Agent Properties, Error Code: ' + CAST(@Error AS VARCHAR(100))
+	RAISERROR (@ERRORMsg, 16, 1)
+END
+
+IF EXISTS(SELECT * FROM LocalAdmin..yDBVersion WHERE VersionID = 1 AND CAST(SUBSTRING(VersionName, 1, CHARINDEX('.',VersionName)-1) AS INTEGER) >= 4) -- Version 4.0 or later
+BEGIN
+	CREATE TABLE #WM_REGVALUES (value VARCHAR(256), data VARCHAR(256))
+	INSERT INTO #WM_REGVALUES EXEC master..xp_regenumvalues 'HKEY_LOCAL_MACHINE', 'SOFTWARE\ProFxENGAGEMENT30\WM'
+	IF EXISTS(SELECT * FROM #WM_REGVALUES WHERE value = 'StandAlone' AND data = '1') -- WM Citrix 
+	BEGIN
+		--Need to schedule a SQL Job for Bin space calculation
+		EXEC sp_procoption 'USPU_StartSQLAgent', 'startup', 'true'
+
+		EXEC @Error = master..USPU_StartSQLAgent
+		IF @Error <> 0
+		BEGIN
+			SELECT @ERRORMsg = 'Failed to Start SQL Agent, Error Code: ' + CAST(@Error AS VARCHAR(100))
+			RAISERROR (@ERRORMsg, 16, 1)
+		END
+
+		IF OBJECT_ID('LocalAdmin..USP_Admin_BinScheduleSpaceUpdate','P') IS NULL
+		BEGIN
+			RAISERROR('Could not find the Stored Procedure: USP_Admin_BinScheduleSpaceUpdate', 16, 1)
+			GOTO FinishScheduling
+		END
+
+		EXEC @Error = LocalAdmin..USP_Admin_BinScheduleSpaceUpdate '03:00:00', 1440
+		IF @Error <> 0
+		BEGIN
+			SELECT @ErrorMsg = 'Failed to schedule the job to check DB Space, Error: ' + CAST(@Error AS VARCHAR(100))
+			RAISERROR(@ErrorMsg, 16, 1)
+			GOTO FinishScheduling
+		END
+	END
+	DROP TABLE #WM_REGVALUES
+END /* 	@yDBVersion >= 4 */
+FinishScheduling:
+			]]></Query>
+    <Query Title="Update Archived Binder Location" Type="2" Index="7"><![CDATA[--Update the location of Archived binders
+--Created by Jon Reed 1-15-2009
+--Create the stored procedure
+CREATE PROCEDURE USP_UpdateArchiveLocation
+	@NEWfilepath VARCHAR(1000)
+AS
+BEGIN
+
+	SET NOCOUNT ON
+
+DECLARE 
+@OLDfullvalue VARCHAR(1000),
+@NEWfullvalue VARCHAR(1000),
+@filename VARCHAR(500),
+@OLDfilepath VARCHAR(1000),
+
+@delimeter VARCHAR(1),
+@Startpos INT,
+@length INT,
+@counter INT
+
+SET @NEWfilepath = '{0}'
+SET @delimeter = '\'
+
+DECLARE  C1 CURSOR  FOR SELECT archivedlocation FROM Binder WHERE archivedby != '00000000-0000-0000-0000-000000000000' FOR UPDATE
+OPEN C1
+
+FETCH NEXT FROM C1 INTO @OLDfullvalue While @@Fetch_Status = 0
+BEGIN
+	IF LEN(@OLDfullvalue) > 0
+	BEGIN
+		SET @length = LEN(@OLDfullvalue)
+		SET @Startpos = (@length - (charindex(@delimeter, reverse(@OLDfullvalue)))) + 2
+
+		SET @OLDfilepath = substring(@OLDfullvalue, 0, @Startpos)
+		SET @filename = substring(@OLDfullvalue, @Startpos, ((@length - @Startpos)+1))
+
+		SET @NEWfullvalue = @NEWfilepath + @filename
+
+		PRINT 'Old Full Value = ' + @OLDfullvalue
+		PRINT 'Old File Path = ' + @OLDfilepath
+		PRINT 'File Name = ' + @filename
+		PRINT 'New Full Value = ' + @NEWfullvalue
+		PRINT ''
+		
+		UPDATE binder
+			SET archivedlocation = @NEWfullvalue
+			WHERE current OF C1
+	END
+	
+	FETCH NEXT FROM C1 INTO @OLDfullvalue
+END
+
+CLOSE C1
+DEALLOCATE C1
+END 
+			]]><Var Default="C:\\"><![CDATA[New path for the Archived Binders:]]></Var></Query>
+    <Query Title="Attach Database" Type="0" Index="1"><![CDATA[sp_attach_db {0}, {1}]]><Var Default="DB Name"><![CDATA[Database Name]]></Var><Var Default="File Name"><![CDATA[File name and Location here (ie: C:\\database\\database.mdf)]]></Var></Query>
+    <Query Title="Show KC Data by Workpaper" Type="4" Index="0"><![CDATA[SELECT w.TitleVersionID, o.ContentObjectName, o.StrKey, o.StrValue
+FROM [{0}].dbo.KnowledgeCoach AS b
+JOIN BinderData.Workpaper AS w
+ON b.KCBid=w.KCBinderGuid
+JOIN BinderData.WorkpaperContentObjectProperty AS o
+ON w.KCWorkpaperGuid=o.KCWorkpaperGuid
+WHERE Bid = '{1}' AND WorkpaperGuid = '{2}'
+ORDER BY o.ContentObjectName, o.StrKey
+			]]><Var Default="LocalBin_GUID"><![CDATA[LocalBin_GUID]]></Var><Var Default="Binder GUID"><![CDATA[Binder GUID]]></Var><Var Default="Workpaper GUID"><![CDATA[Workpaper GUID]]></Var></Query>
+    <Query Title="Change Doc Type" Type="2" Index="8"><![CDATA[UPDATE Doc
+SET doctype='{0}' WHERE did='{1}'
+			]]><Var Default="5"><![CDATA[Set Doctype to:]]></Var><Var Default="00000-0000-0000-000-00000"><![CDATA[Document GUID:]]></Var></Query>
+    <Query Title="Delete TB Entry" Type="2" Index="9"><![CDATA[USE {0}
+DELETE FROM doc WHERE bid='{1}' and did='{2}'
+			]]><Var Default="LocalBin_GUID"><![CDATA[Local Bin:]]></Var><Var Default="00000-0000-0000-000-00000"><![CDATA[Binder GUID:]]></Var><Var Default="00000-0000-0000-000-00000"><![CDATA[Document GUID:]]></Var></Query>
+    <Query Title="Grouping Info by TB Name" Type="3" Index="5"><![CDATA[SELECT * 
+FROM [TB_LocalBin_63C57DC0-E881-4AAB-B1E6-0BB49B2C7268]..Grouping AS TBLocalGroup 
+JOIN [TB_LocalAdmin]..TrialBalance AS TBLocal 
+ON TBLocalGroup.TrialBalanceIntID = TBLocal.TrialBalanceIntID
+JOIN [LocalBin_3814940F-6233-4B53-A63C-C143462138C5]..TrialBalance AS LocalTB
+ON TBLocal.TrialBalanceGuid = LocalTB.TrialBalanceGuid
+JOIN [LocalAdmin]..Binder AS LocalBinder
+ON LocalTB.bid = LocalBinder.bid
+JOIN [LocalBin_3814940F-6233-4B53-A63C-C143462138C5]..Doc AS LocalDoc
+ON LocalTB.did = LocalDoc.Did
+WHERE LocalBinder.Name = '{1}'
+AND LocalDoc.Name = '{0}' 
+			]]><Var Default="TB Name"><![CDATA[Trial Balance Name:]]></Var><Var Default="Binder Name"><![CDATA[Binder Name:]]></Var></Query>
+    <Query Title="Beginning Balance by TB Name" Type="3" Index="6"><![CDATA[SELECT *
+FROM [{0}]..ClientBalance AS CB
+JOIN [TB_LocalAdmin]..TrialBalance AS TBLocalAdmin
+ON TBLocalAdmin.TrialBalanceIntID = CB.TrialBalanceIntID
+JOIN [{1}]..TrialBalance AS LocalBinTB
+ON TBLocalAdmin.TrialBalanceGuid = LocalBinTB.TrialBalanceGuid
+JOIN [LocalAdmin]..Binder AS LocalAdminB
+ON LocalBinTB.Bid = LocalAdminB.Bid
+JOIN [{1}]..Doc AS LocalDoc
+ON LocalBinTB.did = LocalDoc.Did
+WHERE LocalAdminB.Name = '{2}'
+AND LocalDoc.Name = '{3}'
+			]]><Var Default="TB Local Bin name here"><![CDATA[TB Local Bin name:]]></Var><Var Default="Local Bin name here"><![CDATA[Local Bin name:]]></Var><Var Default="Binder name here"><![CDATA[Binder name:]]></Var><Var Default="TB name here"><![CDATA[Trial Balance name:]]></Var></Query>
+    <Query Title="Machine Task List" Type="1" Index="2"><![CDATA[exec xp_cmdshell 'tasklist /fo table /v ']]></Query>
+    <Query Title="CFR Clients and Binders 6.0" Type="0" Index="2"><![CDATA[USE TB_CentralAdmin
+GO
+--Drop the procedure if it exists
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE name = 'USP_TB_Admin_CopyMultipleTBs' AND Type = 'P')
+	DROP PROCEDURE [dbo].USP_TB_Admin_CopyMultipleTBs
+GO
+
+--Create the stored procedure
+CREATE PROCEDURE USP_TB_Admin_CopyMultipleTBs	 
+AS
+BEGIN
+	DECLARE  @l_SourceTrialBalanceGuid		UNIQUEIDENTIFIER
+			,@l_TargetTrialBalanceGuid		UNIQUEIDENTIFIER
+			,@l_SourceTrialBalanceIntID		INT
+			,@l_TargetTrialBalanceIntID		INT
+			,@l_SourceBinDatabaseName		VARCHAR(100)
+			,@l_TargetBinDatabaseName		VARCHAR(100)
+			,@l_LastUpdatedDtTm				DATETIME
+			
+	SET @l_LastUpdatedDtTm = GETUTCDATE()
+	
+	DECLARE @CURSOR		AS	CURSOR
+	SET @CURSOR = CURSOR
+	FOR
+		SELECT	TrialBalanceGuid
+			   ,NewTrialBalanceGuid
+		  FROM ##TrialBalance
+		  
+	OPEN @CURSOR
+	FETCH NEXT FROM @CURSOR INTO @l_SourceTrialBalanceGuid
+								,@l_TargetTrialBalanceGuid
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+	
+		EXEC dbo.USP_TB_Admin_CreateTrialBalance	@i_iTrialBalanceGuid = @l_TargetTrialBalanceGuid,
+													@o_iTrialBalanceIntID = @l_TargetTrialBalanceIntID OUTPUT,
+													@o_BinDatabaseName = @l_TargetBinDatabaseName OUTPUT
+													
+		SELECT @l_SourceBinDatabaseName = Bin.DatabaseName
+			  ,@l_SourceTrialBalanceIntID = TrialBalanceIntID
+		  FROM Bin
+		 INNER JOIN TrialBalance
+			ON (Bin.BinIntID = TrialBalance.BinIntID)
+		 WHERE TrialBalance.TrialBalanceGuid = @l_SourceTrialBalanceGuid
+		 
+		EXEC [dbo].[USP_TB_Admin_CopyTBFromTB]		 @srcTrialBalanceIntID	= @l_SourceTrialBalanceIntID
+													,@srcBinName			= @l_SourceBinDatabaseName
+													,@newTrialBalanceIntID	= @l_TargetTrialBalanceIntID
+													,@newBinName			= @l_TargetBinDatabaseName
+													,@LastUpdatedDtTm		= @l_LastUpdatedDtTm
+		 
+		FETCH NEXT FROM @CURSOR INTO @l_SourceTrialBalanceGuid
+									,@l_TargetTrialBalanceGuid
+	END
+END
+GO
+
+
+
+USE KC_CentralAdmin
+GO
+--Drop the procedure if it exists
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE name = 'USP_KC_Admin_CopySingleBinder' AND Type = 'P')
+	DROP PROCEDURE [dbo].USP_KC_Admin_CopySingleBinder
+GO
+
+--Create the stored procedure
+CREATE PROCEDURE USP_KC_Admin_CopySingleBinder	 
+AS
+BEGIN
+	DECLARE  @l_KCBid						UNIQUEIDENTIFIER
+			,@l_NewKCBid					UNIQUEIDENTIFIER
+			,@l_SourceKCBinderGuid			UNIQUEIDENTIFIER
+			,@l_TargetKCBinderGuid			UNIQUEIDENTIFIER
+			,@l_SourceBinDatabaseName		VARCHAR(100)
+			,@l_TargetBinDatabaseName		VARCHAR(100)
+			,@l_LastUpdatedDtTm				DATETIME
+			,@l_SQL							VARCHAR(MAX)
+			
+	SET @l_LastUpdatedDtTm = GETUTCDATE()
+	
+	DECLARE @CURSOR		AS	CURSOR
+	SET @CURSOR = CURSOR
+	FOR
+		SELECT	KCBid
+			   ,NewKCBid
+		  FROM ##KnowledgeCoach
+		  
+	OPEN @CURSOR
+	FETCH NEXT FROM @CURSOR INTO @l_SourceKCBinderGuid
+								,@l_TargetKCBinderGuid
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+	
+												
+		SELECT @l_SourceBinDatabaseName = Bin.DatabaseName
+		  FROM Bin
+		 INNER JOIN Binder
+			ON (Bin.BinIntID = Binder.BinIntID)
+		 WHERE Binder.KCBinderGuid = @l_SourceKCBinderGuid
+		 
+		SET @l_SQL = '[' + @l_SourceBinDatabaseName + '].[BinderData].[USP_KC_Bin_CopyBinder]	 @i_SourceKCBinderGuid	= ''' + CAST(@l_SourceKCBinderGuid AS VARCHAR(100)) + '''
+																								,@i_NewKCBinderGuid		= ''' + CAST(@l_TargetKCBinderGuid AS VARCHAR(100)) + ''''
+		EXEC (@l_SQL)
+		 
+		FETCH NEXT FROM @CURSOR INTO @l_SourceKCBinderGuid
+									,@l_TargetKCBinderGuid
+	END
+END
+GO
+
+USE CentralAdmin
+GO
+
+--Drop the procedure if it exists
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE name = 'USP_CreateBinders' AND Type = 'P')
+	DROP PROCEDURE [dbo].[USP_CreateBinders]
+GO
+
+--Drop the procedure if it exists
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE name = 'USP_CreateBinders' AND Type = 'P')
+	DROP PROCEDURE [dbo].[USP_CreateBinders]
+GO
+
+--Create the stored procedure
+CREATE PROCEDURE USP_CreateBinders
+	@Source_Binder_Guid VARCHAR(38),				--The Source Binder's Guid
+	@Num_Clients BIGINT,						--The Total Number of Clients to create
+	@Num_Binders_Per_Client BIGINT,					--The Number of Binders to Create per Client
+	@Num_Binders_Per_Bin BIGINT = 3000,				--The Number of Binders to Create per Bin (This does NOT affect the number of binders created however) to use only one bin give this a value of -1
+	@Unique_Clientname_Suffix VARCHAR(64) = '1',			--Unique Suffix to Use if running this script multiple times
+	@Client_Index VARCHAR(64) = '',					--Client Index, The Client Num will follow the Client Index
+	@Client_Name VARCHAR(64)= 'Client_',				--Client Name, The Client Num will follow the Client Name
+	@Binder_Index VARCHAR(64) = '',					--Binder Index, The Binder Num will follow the Binder Index
+	@Binder_Name VARCHAR(64) = 'Binder_',                           --Binder Name, The Binder Num will follow the Binder Name
+	@CopyWorkpaperFiles BIT = 0					--1 = Copy WOrkpaper Files, 0 = Don't Copy WOrkpaper Files
+AS
+BEGIN
+
+	SET NOCOUNT ON
+	
+	--Error Handling Variables
+	DECLARE @Error INT
+	DECLARE @RetVal INT
+	DECLARE @ErrorMessage VARCHAR(256)
+	
+	--Constants
+	DECLARE @NULL_GUID VARCHAR(38)
+		,@ADMIN_GUID VARCHAR(38)
+
+	SELECT @NULL_GUID = '00000000-0000-0000-0000-000000000000'
+	SELECT @ADMIN_GUID = '420A97F0-7939-11D4-BD34-0050DAB66630'
+	
+	DECLARE  @Current_Bin_Guid 	VARCHAR(38)
+		,@Current_Bin_DBName 	VARCHAR(64)
+		,@Current_Client_Guid 	VARCHAR(38)
+		,@Current_Binder_Guid 	VARCHAR(38)
+		,@CFR_Guid 		VARCHAR(38)
+		,@CFRSharePath 		VARCHAR(256)
+		,@Bin_Binder_Count 	BIGINT
+		,@Client_Binder_Count 	BIGINT
+		,@Client_Count 		BIGINT
+		,@TempDate 		DATETIME
+		,@CMD 			NVARCHAR(4000)
+		,@Date_Offset 		INT
+		,@MaxSeqID		INT
+
+	--Check for Binder existance
+	IF NOT EXISTS(SELECT * FROM Binder INNER JOIN CFR ON Binder.cfrid = Cfr.cfrguid INNER JOIN CFRServer ON CFRServer.Serverguid = CFR.Serverguid WHERE localflag = 1 and bid = @Source_Binder_Guid)
+	BEGIN
+		SELECT @ErrorMessage = 'Source Binder does not exist on the Local Office Server.'
+		GOTO ScriptError
+	END
+	
+	SELECT @CFR_Guid = cfrid FROM Binder WHERE bid = @Source_Binder_Guid
+	SELECT @CFRSharePath = cfrsharepath FROM CFR WHERE cfrguid = @CFR_Guid
+	SELECT @Current_Bin_DBName = BinDBName FROM Bin_Binder INNER JOIN Bin ON Bin_Binder.BinGuid = Bin.BinGuid WHERE bid = @Source_Binder_Guid
+	
+	IF OBJECT_ID('Tempdb..##Binder','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder
+	END
+	IF OBJECT_ID('Tempdb..##Binder_Staff_Assigned','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder_Staff_Assigned
+	END
+	IF OBJECT_ID('Tempdb..##Binder_Staff_AltRightsGroup','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder_Staff_AltRightsGroup
+	END
+	IF OBJECT_ID('Tempdb..##Binder_Staff_SignOff','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder_Staff_SignOff
+	END
+	IF OBJECT_ID('Tempdb..##Binder_Team','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder_Team
+	END
+	IF OBJECT_ID('Tempdb..##Prior','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Prior
+	END
+	IF OBJECT_ID('Tempdb..##BinderHist','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##BinderHist
+	END
+	IF OBJECT_ID('Tempdb..##Doc','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Doc
+	END
+	IF OBJECT_ID('Tempdb..##DocConflict','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##DocConflict
+	END
+	IF OBJECT_ID('Tempdb..##DocHist','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##DocHist
+	END
+	IF OBJECT_ID('Tempdb..##DocNote','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##DocNote
+	END
+	IF OBJECT_ID('Tempdb..##TabNote','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##TabNote
+	END
+	IF OBJECT_ID('Tempdb..##DocSignOff','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##DocSignOff
+	END
+	IF OBJECT_ID('Tempdb..##NoteTo','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##NoteTo
+	END
+	IF OBJECT_ID('Tempdb..##TabNoteTo','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##TabNoteTo
+	END
+	IF OBJECT_ID('Tempdb..##SyncHist','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##SyncHist
+	END
+	IF OBJECT_ID('Tempdb..##Tab','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Tab
+	END
+	IF OBJECT_ID('Tempdb..##TrialBalance','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##TrialBalance
+	END
+	IF OBJECT_ID('Tempdb..##KnowledgeCoach','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##KnowledgeCoach
+	END
+
+	--Copy Binder Information into Temporary Tables so we don't have to keep track of what bin the orginal binder is in nor do queries on tables that are going to grow really big
+	SELECT * INTO ##Binder FROM Binder WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Binder_Staff_Assigned FROM Binder_Staff_Assigned WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Binder_Staff_AltRightsGroup FROM Binder_Staff_AltRightsGroup WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Binder_Staff_SignOff FROM Binder_Staff_SignOff WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Binder_Team FROM Binder_Team WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Prior FROM Prior WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##BinderHist FROM BinderHist WHERE bid = @Source_Binder_Guid
+	
+	SELECT @CMD = 'SELECT * INTO ##Doc FROM [' + @Current_Bin_DBName + ']..Doc WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##DocConflict FROM [' + @Current_Bin_DBName + ']..DocConflict WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##DocHist FROM [' + @Current_Bin_DBName + ']..DocHist WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##DocNote FROM [' + @Current_Bin_DBName + ']..DocNote WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##DocSignOff FROM [' + @Current_Bin_DBName + ']..DocSignOff WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##NoteTo FROM [' + @Current_Bin_DBName + ']..NoteTo WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##SyncHist FROM [' + @Current_Bin_DBName + ']..SyncHist WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##Tab FROM [' + @Current_Bin_DBName + ']..Tab WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##TabNote FROM [' + @Current_Bin_DBName + ']..TabNote WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##TabNoteTo FROM [' + @Current_Bin_DBName + ']..TabNoteTo WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##TrialBalance FROM [' + @Current_Bin_DBName + ']..TrialBalance WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	ALTER TABLE ##TrialBalance ADD NewTrialBalanceGuid	UNIQUEIDENTIFIER NOT NULL DEFAULT (NEWID())
+
+	SELECT @CMD = 'SELECT * INTO ##KnowledgeCoach FROM [' + @Current_Bin_DBName + ']..KnowledgeCoach WHERE bid = ''' + @Source_Binder_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	ALTER TABLE ##KnowledgeCoach ADD NewKCBid	UNIQUEIDENTIFIER NOT NULL DEFAULT (NEWID())
+		
+	IF OBJECT_ID('tempdb..#ClientGroup','U') IS NOT NULL
+	BEGIN
+		DROP TABLE #ClientGroup
+	END
+	
+	CREATE TABLE #ClientGroup (
+		seqid			INT IDENTITY (1,1)
+		,ClientGroupGuid		UNIQUEIDENTIFIER
+	)
+	
+	INSERT INTO #ClientGroup ( 
+		ClientGroupGuid )
+	SELECT ClientGroupGuid
+	  FROM ClientGroup
+	 WHERE Name Like 'ClientGroup_%'
+	   AND IsNumeric(SUBSTRING(Name, 13, 1000)) = 1
+		
+	SELECT @Current_Bin_Guid = ActiveBin FROM BinConfiguration
+	SELECT @Current_Bin_DBName = BinDBName FROM Bin WHERE BinGuid = @Current_Bin_Guid
+	SELECT @Client_Count = 0
+	SELECT @Bin_Binder_Count = COUNT(*) FROM Bin_Binder WHERE BinGuid = @Current_Bin_Guid
+	
+	WHILE @Client_Count < @Num_Clients
+	BEGIN
+		SELECT  @Client_Count =  @Client_Count + 1
+	
+		--Create a Client
+		SELECT @Current_Client_Guid = NEWID()
+	
+		INSERT INTO Client(
+			clientguid, 				clientid, 				accams_acctnum, 			entitytypeid, 
+			busactivitycode, 			prospect, 				name, 					name2, 
+			sortname, 				fiscalyearend, 				primaryemail, 				secondaryemail, 
+			acquireddate, 				termdate, 				url, 					credithold, 
+			industrytypeid, 			fedempid, 				stateid, 				createddate, 
+			createdby, 				lastchangeddate, 			lastchangedby, 				staffpartner, 
+			staffmanager, 				systemmodifieddate, 			userid, 				password, 
+			dbflag
+		)  
+		SELECT	@Current_Client_Guid, 			@Client_Index + LTRIM(STR(@Client_Count)), 	'', 				1, 
+			'', 					'', 					@Client_Name 
+													+ LTRIM(STR(@Client_Count)) 
+													+ ':' + @Unique_Clientname_Suffix, 	'', 
+			'', 					'1902-02-02', 				'', 					'', 
+			'1902-02-02', 				'1902-02-02', 				'', 					' ', 
+			0, 					'', 					'', 					GETUTCDATE(), 
+			@ADMIN_GUID, 				GETUTCDATE(), 				@ADMIN_GUID, 				@NULL_GUID, 
+			@NULL_GUID, 				GETUTCDATE(), 				'', 					'', 
+			64
+		
+		SELECT @MaxSeqID = MAX(seqid)
+		  FROM #ClientGroup
+		
+		/*
+		**	Populate Client_ClientGroup
+		*/
+		INSERT INTO Client_Clientgroup (
+			 ClientGuid       	,ClientGroupGuid  	,lastchangeddate  ,dbflag           
+		)
+		SELECT 
+			 @Current_Client_Guid   ,ClientGroupGuid  	,GETUTCDATE()  ,64           
+		  FROM #ClientGroup
+		 WHERE seqid = CAST(CEILING(RAND() * @MaxSeqID) AS INT)
+
+
+		INSERT INTO CFR_Client(cfrguid, clientguid) VALUES(@CFR_Guid, @Current_Client_Guid)
+		
+		Print 'Client Created: ' + @Client_Index + LTRIM(STR(@Client_Count)) + '-' + @Client_Name + LTRIM(STR(@Client_Count))+ ':' + @Unique_Clientname_Suffix
+	
+		SELECT @Client_Binder_Count = 0
+	
+		WHILE @Client_Binder_Count < @Num_Binders_Per_Client
+		BEGIN
+			SELECT @Client_Binder_Count = @Client_Binder_Count + 1
+			SELECT @Bin_Binder_Count = @Bin_Binder_Count + 1
+	
+			IF @Bin_Binder_Count >= @Num_Binders_Per_Bin AND @Num_Binders_Per_Bin != -1
+			BEGIN
+				SELECT @Bin_Binder_Count = 0
+	
+				SELECT @CMD = 'EXEC [' + @Current_Bin_DBName + ']..USPU_Bin_UpdateStatistics'
+				EXEC master..sp_executeSQL @CMD
+	
+				--Create a New Bin
+				SELECT @Current_Bin_Guid = NEWID()
+				EXEC @Error = dbo.USP_Admin_BinCreateBin @Current_Bin_Guid, '', @RetVal OUTPUT
+				IF @RetVal <> 0 OR @Error <> 0	
+				BEGIN
+					SELECT @ErrorMessage = 'Failed to Create a new bin.'
+					GOTO ScriptError
+				END
+				UPDATE Bin SET MaxBinders = @Num_Binders_Per_Bin WHERE BinGuid = @Current_Bin_Guid
+				SELECT @Current_Bin_DBName = BinDBName FROM Bin WHERE BinGuid = @Current_Bin_Guid
+				Print ''
+				Print 'New Bin Created: ' + @Current_Bin_DBName
+				Print ''
+			END
+	
+			--Create a Binder
+			SELECT @Current_Binder_Guid = NEWID()
+			SELECT @TempDate = GETUTCDATE()
+	
+			SELECT @Date_Offset = DATEDIFF(dd, dtcreated, @TempDate)
+			  FROM ##Binder
+	
+	
+			INSERT INTO Binder (	
+				bid, 				lfrguid, 				pybid, 					clnt, 
+				rfbndguid, 			bndtemplateguid, 			cfrid, 					bndindex, 
+				name, 				title, 					bndtype, 				periodseqtypeid, 
+				yedate, 			begdate, 				enddate, 				periodnum, 
+				chrgcode, 			status, 				pwd, 					consolid, 
+				writeup, 			permbinder, 				leadpartner, 				dtcreated, 
+				createdby, 			dtdeliv, 				dtarchived, 				archivedby, 
+				archivedlocation, 		archivedfilename, 			dtfinalized, 				finalizedby, 
+				dbflag, 			lastchangeddate, 			firmguid, 				location, 
+				destCFR, 			finalizeversion, 			converteddate, 				FinancialStatmtsSubmitDate, 
+				dbflagex,			DCDPeriodStartDateTypeID, 		DCDPeriodDays, 				RetentionPeriodStartDateTypeID, 
+				RetentionPeriodYears,		DateOfReport,				ReportReleaseDate, 			DCD,	
+				DCDOverridden,			RetentionPeriodEndDate,			RetentionOverridden, 			DCDRLastChangedDate,
+				CustomStatus
+					)
+			SELECT 			
+				@Current_Binder_Guid, 		@CFR_Guid, 				@NULL_GUID, 				@Current_Client_Guid, 
+				@NULL_GUID, 			@NULL_GUID, 				@CFR_Guid, 				@Binder_Index + LTRIM(Str(@Client_Binder_Count)), 
+				@Binder_Name + LTRIM(Str(@Client_Binder_Count)), 
+								title, 					bndtype, 				periodseqtypeid, 
+				yedate, 			begdate, 				enddate, 				periodnum, 
+				chrgcode, 			0, 					'', 					0, 
+				0, 				0, 					leadpartner, 				@TempDate, 
+				@ADMIN_GUID, 			dtdeliv, 				'1901-02-02', 				@NULL_GUID, 
+				'', 				'', 					dtfinalized, 				finalizedby, 
+				dbflag, 			@TempDate, 				firmguid, 				@CFR_Guid, 
+				@NULL_GUID, 			finalizeversion, 			NULL, 					'1901-02-02 00:00:00.000', 
+				0,				DCDPeriodStartDateTypeID, 		DCDPeriodDays, 				RetentionPeriodStartDateTypeID, 
+				RetentionPeriodYears,		DATEADD(dd,@Date_Offset,DateOfReport),	DATEADD(dd,@Date_Offset,
+														ReportReleaseDate), 		DATEADD(dd,@Date_Offset,DCD),	
+				DCDOverridden,			DATEADD(dd,@Date_Offset,RetentionPeriodEndDate),	RetentionOverridden, 			@TempDate,
+				0
+			  FROM ##Binder
+	
+			INSERT INTO Bin_Binder (bid, BinGuid, LfrGuid, CreateDateTime, DBFlag)
+			VALUES (@Current_Binder_Guid, @Current_Bin_Guid, @CFR_Guid, @TempDate, 64)
+	
+			INSERT INTO Binder_Staff_Assigned (bid, staffguid) 
+			SELECT @Current_Binder_Guid, staffguid FROM ##Binder_Staff_Assigned
+	
+			INSERT INTO Binder_Staff_AltRightsGroup (bid, staffguid, rights_no, lastchangeddate, dbflag)
+			SELECT @Current_Binder_Guid, staffguid, rights_no, lastchangeddate, dbflag FROM ##Binder_Staff_AltRightsGroup
+	
+			INSERT INTO Binder_Staff_Signoff (bid, staffguid, signoff, dtsignoff, lastchangeddate, dbflag) 
+			SELECT @Current_Binder_Guid, staffguid, signoff, dtsignoff, lastchangeddate, dbflag FROM ##Binder_Staff_Signoff
+	
+			INSERT INTO Binder_Team (bid, teamguid)
+			SELECT @Current_Binder_Guid, teamguid FROM ##Binder_Team
+	
+			INSERT INTO Prior (bid, periodnum, periodyear, yedate, pbdate, pedate, lastchangeddate, dbflag, lfrguid)
+			SELECT @Current_Binder_Guid, periodnum, periodyear, yedate, pbdate, pedate, lastchangeddate, dbflag, lfrguid FROM ##Prior
+	
+			INSERT INTO Binderhist (
+				 Bid             			,LfrGuid         ,BinderHistGuid  		,TranType        
+				,dtTran          			,PerformedBy     
+			)
+			SELECT 
+				 @Current_Binder_Guid			,@CFR_Guid       ,BinderHistGuid  		,TranType        
+				,DATEADD(dd, @Date_Offset, dtTran)     	,PerformedBy     
+			  FROM ##BinderHist
+	
+			--Copy Database Records
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..Binder (bid, lfrguid, pybid, clnt, rfbndguid, bndtemplateguid, cfrid, bndindex, name, title, bndtype, periodseqtypeid, yedate, begdate, enddate, periodnum, chrgcode, status, pwd, consolid, writeup, permbinder, leadpartner, dtcreated, createdby, dtdeliv, dtarchived, archivedby, archivedlocation, archivedfilename, dtfinalized, finalizedby, dbflag, lastchangeddate, firmguid, location, destCFR, finalizeversion, converteddate, FinancialStatmtsSubmitDate, dbflagex, customstatus) SELECT ''' + @Current_Binder_Guid + ''',  ''' + @CFR_GUID + ''', ''' + @NULL_GUID + ''', ''' + @NULL_Guid + ''' ,  ''' + @NULL_GUID + ''',  ''' + @NULL_GUID + ''',  ''' + @NULL_GUID + ''', ''' + @Binder_Index + LTRIM(Str(@Client_Binder_Count)) + ''', ''' + @Binder_Name + LTRIM(Str(@Client_Binder_Count)) + ''', title, bndtype, periodseqtypeid, yedate, begdate, enddate, periodnum, chrgcode, 0, '''', 0, 0, 0, leadpartner, ''' + Cast(@TempDate AS VARCHAR(36)) + ''', ''' + @ADMIN_GUID + ''', dtdeliv, ''Jan 1 1901 8:00 AM'', ''' + @NULL_GUID + ''', '''', '''', dtfinalized, finalizedby, dbflag, ''' + Cast(@TempDate AS VARCHAR(36)) + ''', firmguid, ''' + @CFR_Guid + ''', ''' + @NULL_GUID + ''', finalizeversion, NULL, ''1901-02-02 00:00:00.000'', 0,0 FROM ##Binder'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..Tab (bid, LfrGuid, Tab, ParentTab, Name, TabIndex, Version, DBFlag, deleted, createdby, createddt, changedby, lastchangeddate) SELECT ''' + @Current_Binder_Guid + ''', LfrGuid, Tab, ParentTab, Name, TabIndex, Version, DBFlag, deleted, createdby, createddt, changedby, lastchangeddate FROM ##Tab'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..Doc (bid, LfrGuid, did, tab, ee_tbguid, indx, name, title, se_paid, se_seq, se_ruletype, se_status, ee_fileext, doctype, pwd, locked, rollforward, ee_rffilepath, dtcreated, createdby, deleted, dtdeleted, deletedby, dtmodified, modifiedby, checkoutby, checkoutlocation, assignto, signature, version, dbflag, se_grouplinkid, TB_ID, assigntolocation, freeze, assigntodate, KT_OpenedAfterRF, LiveEditor ) SELECT ''' + @Current_Binder_Guid + ''', LfrGuid, did, tab, ee_tbguid, indx, name, title, se_paid, se_seq, se_ruletype, se_status, ee_fileext, doctype, pwd, locked, rollforward, ee_rffilepath, dtcreated, createdby, deleted, dtdeleted, deletedby, dtmodified, modifiedby, checkoutby, checkoutlocation, assignto, signature, version, dbflag, se_grouplinkid, TB_ID, assigntolocation, freeze, assigntodate, KT_OpenedAfterRF, ''' + @NULL_GUID + ''' FROM ##Doc'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..DocConflict (newdocguid, lastsyncwith, bid, LfrGuid, did, tab, ee_tbguid, indx, name, title, se_paid, se_seq, se_ruletype, se_status, ee_fileext, doctype, pwd, locked, rollforward, ee_rffilepath, dtcreated, createdby, deleted, dtdeleted, deletedby, dtmodified, modifiedby, checkoutby, checkoutlocation, assignto, signature, version, dbflag, se_grouplinkid, TB_ID, assigntolocation, freeze, assigntodate, KT_OpenedAfterRF, LiveEditor) SELECT newdocguid, lastsyncwith, ''' + @Current_Binder_Guid + ''', LfrGuid, did, tab, ee_tbguid, indx, name, title, se_paid, se_seq, se_ruletype, se_status, ee_fileext, doctype, pwd, locked, rollforward, ee_rffilepath, dtcreated, createdby, deleted, dtdeleted, deletedby, dtmodified, modifiedby, checkoutby, checkoutlocation, assignto, signature, version, dbflag, se_grouplinkid, TB_ID, assigntolocation, freeze, assigntodate, KT_OpenedAfterRF, ''' + @NULL_GUID + ''' FROM ##DocConflict'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..DocHist (dochistguid, bid, lfrguid, did, trantype, dttran, docname, docindex, performedby) SELECT dochistguid, ''' + @Current_Binder_Guid + ''', lfrguid, did, trantype, dttran, docname, docindex, performedby FROM ##DocHist'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..DocNote (docnoteguid, bid, lfrguid, did, response, docnotetypeid, subject, note, dtcreated, createdby, version, dbflag, location, lastchangeddate) SELECT docnoteguid, ''' + @Current_Binder_Guid + ''', lfrguid, did, response, docnotetypeid, subject, note, dtcreated, createdby, version, dbflag, location, lastchangeddate FROM ##DocNote'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..TabNote (tabnoteguid, bid, lfrguid, tab, response, tabnotetypeid, subject, note, dtcreated, createdby, version, dbflag, location, lastchangeddate) SELECT tabnoteguid, ''' + @Current_Binder_Guid + ''', lfrguid, tab, response, tabnotetypeid, subject, note, dtcreated, createdby, version, dbflag, location, lastchangeddate FROM ##TabNote'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..DocSignOff (bid, lfrguid, did, signofftypeid, signoffby, dtsignoff, disabled, lastchangeddate) SELECT ''' + @Current_Binder_Guid + ''', lfrguid, did, signofftypeid, signoffby, dtsignoff, disabled, lastchangeddate FROM ##DocSignOff'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..NoteTo (docnoteguid, staffguid, bid, lfrguid) SELECT docnoteguid, staffguid, ''' + @Current_Binder_Guid + ''', lfrguid FROM ##NoteTo'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..TabNoteTo (tabnoteguid, staffguid, bid, lfrguid) SELECT tabnoteguid, staffguid, ''' + @Current_Binder_Guid + ''', lfrguid FROM ##TabNoteTo'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..SyncHist (SyncHistGuid, bid, lfrguid, fileroomguid, lastsyncdate, successflag, initiatesource, fileroomtype, description) SELECT NEWID(), ''' + @Current_Binder_Guid + ''', lfrguid, fileroomguid, lastsyncdate, successflag, initiatesource, fileroomtype, description FROM ##SyncHist'
+			EXEC master..sp_executeSQL @CMD
+
+			UPDATE ##TrialBalance  SET NewTrialBalanceGuid = NEWID()			
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..TrialBalance (bid, lfrguid, did, TrialBalanceGuid) SELECT ''' + @Current_Binder_Guid + ''', lfrguid, did, NewTrialBalanceGuid FROM ##TrialBalance'
+			EXEC master..sp_executeSQL @CMD
+			EXEC TB_CentralAdmin..USP_TB_Admin_CopyMultipleTBs
+
+			UPDATE ##KnowledgeCoach SET NewKCBid = NEWID()
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..KnowledgeCoach (bid, lfrguid, KCBid) SELECT ''' + @Current_Binder_Guid + ''', lfrguid, NewKCBid FROM ##KnowledgeCoach'
+			EXEC master..sp_executeSQL @CMD
+			EXEC KC_CentralAdmin..USP_KC_Admin_CopySingleBinder
+	
+			IF @CopyWorkpaperFiles = 1
+			BEGIN
+				--Copy the workpapers folder
+				SELECT @cmd = 'XCOPY /E/I/Q/Y "' + @CFRSharePath + '{{' + @Source_Binder_Guid + '}}" "' + @CFRSharePath + '{{' + @Current_Binder_Guid + '}}"'
+				EXEC master..xp_cmdshell @CMD
+			END
+	
+			Print '   Binder Created: ' +  @Binder_Index + LTRIM(STR(@Client_Binder_Count)) + '-' + @Binder_Name + LTRIM(STR(@Client_Binder_Count))
+		END
+	END
+	
+	SELECT @CMD = 'EXEC [' + @Current_Bin_DBName + ']..USPU_Bin_UpdateStatistics'
+	EXEC master..sp_executeSQL @CMD
+	
+	EXEC USPU_Admin_UpdateStatistics
+	
+	DROP TABLE ##Binder
+	DROP TABLE ##Binder_Staff_Assigned
+	DROP TABLE ##Binder_Staff_AltRightsGroup
+	DROP TABLE ##Binder_Staff_SignOff
+	DROP TABLE ##Binder_Team
+	DROP TABLE ##Prior
+	DROP TABLE ##BinderHist
+	DROP TABLE ##Doc
+	DROP TABLE ##DocConflict
+	DROP TABLE ##DocHist
+	DROP TABLE ##DocNote
+	DROP TABLE ##DocSignOff
+	DROP TABLE ##NoteTo
+	DROP TABLE ##SyncHist
+	DROP TABLE ##Tab
+	DROP TABLE ##TabNote
+	DROP TABLE ##TabNoteTo
+	DROP TABLE ##TrialBalance
+	DROP TABLE ##KnowledgeCoach
+	Print 'Done!'
+	
+	GOTO Done
+	ScriptError:
+	Print 'Error: ' + @ErrorMessage
+	Done:
+END
+GO
+
+/*
+ * USAGE:
+ * EXEC USP_CreateBinders 
+ *    @Source_Binder_Guid, 			--(Required) - The Source Binder's Guid
+ *    @Num_Clients, 				--(Required) - The Total Number of Clients to create
+ *    @Num_Binders_Per_Client, 			--(Required) - The Number of Binders to Create per Client
+ *    @Num_Binders_Per_Bin, 			--(Optional) Default: 3000      - The Number of Binders to Create per Bin (This does NOT affect the total number of binders created) to use only one bin give this a value of -1
+ *    @Unique_Clientname_Suffix,  		--(Optional) Default: '1'       - Unique Suffix to Use if running this script multiple times
+ *    @Client_Index, 				--(Optional) Default: ''        - Client Index, The Client Num will follow the Client Index
+ *    @Client_Name,				--(Optional) Default: 'Client_' - Client Name, The Client Num will follow the Client Name
+ *    @Binder_Index, 				--(Optional) Default: ''        - Binder Index, The Binder Num will follow the Binder Index
+ *    @Binder_Name, 				--(Optional) Default: 'Binder_' - Binder Name, The Binder Num will follow the Binder Name
+ *    @CopyWorkpaperFiles			--(Optional) Default: 1         - 1 = Copy Workpapers, 0 = do NOT copy Workpapers
+ *
+ * EXAMPLE 1
+ *   Creates 5 clients with 10 Copy's of the Binder with the Guid '00000000-0000-0000-0000-000000000000'):
+ *
+ *   EXEC USP_CreateBinders '00000000-0000-0000-0000-000000000000', 5, 10
+ *
+ * EXAMPLE 2
+ *   Same as above, but the client suffix is 2, and workpaper files are not copied
+ *
+ *   EXEC USP_CreateBinders '00000000-0000-0000-0000-000000000000', 5, 10, @Unique_Clientname_Suffix = '2', @CopyWorkpaperFiles = 0
+ *
+ * You can call the Stored Procedure as many times as you want below with different binders
+ */				
+
+
+EXEC USP_CreateBinders 	'{0}', 	-- Sample Binder
+						 {1},	-- Number of Clients
+						 {2}	-- Number of Bidners
+			
+
+-- Leave the Line below for cleanup!
+DROP PROCEDURE [dbo].[USP_CreateBinders]
+GO
+
+]]><Var Default="0000-0000-0000-0000"><![CDATA[Binder Guid:]]></Var><Var Default="1"><![CDATA[Number of Clients]]></Var><Var Default="1"><![CDATA[Number of Binders per Client]]></Var></Query>
+    <Query Title="LFR Clients and Binders 6.0" Type="0" Index="3"><![CDATA[USE TB_LocalAdmin
+GO
+--Drop the procedure if it exists
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE name = 'USP_TB_Admin_CopyMultipleTBs' AND Type = 'P')
+	DROP PROCEDURE [dbo].USP_TB_Admin_CopyMultipleTBs
+GO
+
+--Create the stored procedure
+CREATE PROCEDURE USP_TB_Admin_CopyMultipleTBs	 
+AS
+BEGIN
+	DECLARE  @l_SourceTrialBalanceGuid		UNIQUEIDENTIFIER
+			,@l_TargetTrialBalanceGuid		UNIQUEIDENTIFIER
+			,@l_SourceTrialBalanceIntID		INT
+			,@l_TargetTrialBalanceIntID		INT
+			,@l_SourceBinDatabaseName		VARCHAR(100)
+			,@l_TargetBinDatabaseName		VARCHAR(100)
+			,@l_LastUpdatedDtTm				DATETIME
+			
+	SET @l_LastUpdatedDtTm = GETUTCDATE()
+	
+	DECLARE @CURSOR		AS	CURSOR
+	SET @CURSOR = CURSOR
+	FOR
+		SELECT	TrialBalanceGuid
+			   ,NewTrialBalanceGuid
+		  FROM ##TrialBalance
+		  
+	OPEN @CURSOR
+	FETCH NEXT FROM @CURSOR INTO @l_SourceTrialBalanceGuid
+								,@l_TargetTrialBalanceGuid
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+	
+		EXEC dbo.USP_TB_Admin_CreateTrialBalance	@i_iTrialBalanceGuid = @l_TargetTrialBalanceGuid,
+													@o_iTrialBalanceIntID = @l_TargetTrialBalanceIntID OUTPUT,
+													@o_BinDatabaseName = @l_TargetBinDatabaseName OUTPUT
+													
+		SELECT @l_SourceBinDatabaseName = Bin.DatabaseName
+			  ,@l_SourceTrialBalanceIntID = TrialBalanceIntID
+		  FROM Bin
+		 INNER JOIN TrialBalance
+			ON (Bin.BinIntID = TrialBalance.BinIntID)
+		 WHERE TrialBalance.TrialBalanceGuid = @l_SourceTrialBalanceGuid
+		 
+		EXEC [dbo].[USP_TB_Admin_CopyTBFromTB]		 @srcTrialBalanceIntID	= @l_SourceTrialBalanceIntID
+													,@srcBinName			= @l_SourceBinDatabaseName
+													,@newTrialBalanceIntID	= @l_TargetTrialBalanceIntID
+													,@newBinName			= @l_TargetBinDatabaseName
+													,@LastUpdatedDtTm		= @l_LastUpdatedDtTm
+		 
+		FETCH NEXT FROM @CURSOR INTO @l_SourceTrialBalanceGuid
+									,@l_TargetTrialBalanceGuid
+	END
+END
+GO
+
+
+USE KC_LocalAdmin
+GO
+--Drop the procedure if it exists
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE name = 'USP_KC_Admin_CopySingleBinder' AND Type = 'P')
+	DROP PROCEDURE [dbo].USP_KC_Admin_CopySingleBinder
+GO
+
+--Create the stored procedure
+CREATE PROCEDURE USP_KC_Admin_CopySingleBinder	 
+AS
+BEGIN
+	DECLARE  @l_KCBid						UNIQUEIDENTIFIER
+			,@l_NewKCBid					UNIQUEIDENTIFIER
+			,@l_SourceKCBinderGuid			UNIQUEIDENTIFIER
+			,@l_TargetKCBinderGuid			UNIQUEIDENTIFIER
+			,@l_SourceBinDatabaseName		VARCHAR(100)
+			,@l_TargetBinDatabaseName		VARCHAR(100)
+			,@l_LastUpdatedDtTm				DATETIME
+			,@l_SQL							VARCHAR(MAX)
+			
+	SET @l_LastUpdatedDtTm = GETUTCDATE()
+	
+	DECLARE @CURSOR		AS	CURSOR
+	SET @CURSOR = CURSOR
+	FOR
+		SELECT	KCBid
+			   ,NewKCBid
+		  FROM ##KnowledgeCoach
+		  
+	OPEN @CURSOR
+	FETCH NEXT FROM @CURSOR INTO @l_SourceKCBinderGuid
+								,@l_TargetKCBinderGuid
+	WHILE (@@FETCH_STATUS = 0)
+	BEGIN
+	
+												
+		SELECT @l_SourceBinDatabaseName = Bin.DatabaseName
+		  FROM Bin
+		 INNER JOIN Binder
+			ON (Bin.BinIntID = Binder.BinIntID)
+		 WHERE Binder.KCBinderGuid = @l_SourceKCBinderGuid
+		 
+		SET @l_SQL = '[' + @l_SourceBinDatabaseName + '].[BinderData].[USP_KC_Bin_CopyBinder]	 @i_SourceKCBinderGuid	= ''' + CAST(@l_SourceKCBinderGuid AS VARCHAR(100)) + '''
+																								,@i_NewKCBinderGuid		= ''' + CAST(@l_TargetKCBinderGuid AS VARCHAR(100)) + ''''
+		EXEC (@l_SQL)
+		 
+		FETCH NEXT FROM @CURSOR INTO @l_SourceKCBinderGuid
+									,@l_TargetKCBinderGuid
+	END
+END
+GO
+
+
+
+USE LocalAdmin
+GO
+
+--Drop the procedure if it exists
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE name = 'USP_CreateBinders' AND Type = 'P')
+	DROP PROCEDURE [dbo].[USP_CreateBinders]
+GO
+
+
+--Drop the procedure if it exists
+IF EXISTS (SELECT * FROM dbo.sysobjects WHERE name = 'USP_CreateBinders' AND Type = 'P')
+	DROP PROCEDURE [dbo].[USP_CreateBinders]
+GO
+--Create the stored procedure
+CREATE PROCEDURE USP_CreateBinders
+	@Source_Binder_Guid VARCHAR(38),				--The Source Binder's Guid
+	@Source_Staff_Guid VARCHAR(38),					--The Source Staff's Guid
+	@Num_Clients BIGINT,						--The Total Number of Clients to create
+	@Num_Binders_Per_Client BIGINT,					--The Number of Binders to Create per Client
+	@Num_Binders_Per_Bin BIGINT = 3000,				--The Number of Binders to Create per Bin (This does NOT affect the number of binders created however) to use only one bin give this a value of -1
+	@Unique_Clientname_Suffix VARCHAR(64) = '1',			--Unique Suffix to Use if running this script multiple times
+	@Client_Index VARCHAR(64) = '',					--Client Index, The Client Num will follow the Client Index
+	@Client_Name VARCHAR(64)= 'Client_',				--Client Name, The Client Num will follow the Client Name
+	@Binder_Index VARCHAR(64) = '',					--Binder Index, The Binder Num will follow the Binder Index
+	@Binder_Name VARCHAR(64) = 'Binder_',                           --Binder Name, The Binder Num will follow the Binder Name
+	@CopyWorkpaperFiles BIT = 1					--1 = Copy WOrkpaper Files, 0 = Don't Copy WOrkpaper Files
+AS
+BEGIN
+
+	SET NOCOUNT ON
+	
+	--Error Handling Variables
+	DECLARE @Error INT
+	DECLARE @RetVal INT
+	DECLARE @ErrorMessage VARCHAR(256)
+	
+	--Constants
+	DECLARE @NULL_GUID VARCHAR(38)
+	DECLARE @ADMIN_GUID VARCHAR(38)
+	SELECT @NULL_GUID = '00000000-0000-0000-0000-000000000000'
+	SELECT @ADMIN_GUID = '420A97F0-7939-11D4-BD34-0050DAB66630'
+	
+	DECLARE @Current_Bin_Guid 	VARCHAR(38)
+		,@Current_Bin_DBName 	VARCHAR(64)
+		,@Current_Client_Guid 	VARCHAR(38)
+		,@Current_Binder_Guid 	VARCHAR(38)
+		,@LFR_Guid 		VARCHAR(38)
+		,@LFRSharePath 		VARCHAR(256)
+		,@Bin_Binder_Count 	BIGINT
+		,@Client_Binder_Count 	BIGINT
+		,@Client_Count 		BIGINT
+		,@TempDate 		DATETIME
+		,@CMD 			NVARCHAR(4000)
+		,@Date_Offset 		INT
+		,@MaxSeqID		INT
+	
+	--Check for Profile existance
+	IF NOT EXISTS(SELECT * FROM LFR WHERE staffguid = @Source_Staff_Guid AND localflag = 1)
+	BEGIN
+		SELECT @ErrorMessage = 'Source Staff does not have a profile on the local computer.'
+		GOTO ScriptError
+	END
+	--Check for Binder existance
+	IF NOT EXISTS(SELECT * FROM Binder INNER JOIN LFR ON Binder.lfrguid = lfr.lfrguid WHERE bid = @Source_Binder_Guid AND staffguid = @Source_Staff_Guid)
+	BEGIN
+		SELECT @ErrorMessage = 'Source Binder does not exist in the selected staff''s profile.'
+		GOTO ScriptError
+	END
+	
+	SELECT @LFR_Guid = lfrguid, @LFRSharePath = Lfrsharepath FROM Lfr WHERE Staffguid = @Source_Staff_Guid AND localflag = 1
+	SELECT @Current_Bin_DBName = BinDBName FROM Bin_Binder INNER JOIN Bin ON Bin_Binder.BinGuid = Bin.BinGuid WHERE bid = @Source_Binder_Guid AND lfrguid = @LFR_Guid
+	
+	IF OBJECT_ID('Tempdb..##Binder','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder
+	END
+	IF OBJECT_ID('Tempdb..##Binder_Staff_Assigned','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder_Staff_Assigned
+	END
+	IF OBJECT_ID('Tempdb..##Binder_Staff_AltRightsGroup','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder_Staff_AltRightsGroup
+	END
+	IF OBJECT_ID('Tempdb..##Binder_Staff_SignOff','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder_Staff_SignOff
+	END
+	IF OBJECT_ID('Tempdb..##Binder_Team','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Binder_Team
+	END
+	IF OBJECT_ID('Tempdb..##Prior','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Prior
+	END
+	IF OBJECT_ID('Tempdb..##BinderHist','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##BinderHist
+	END
+	IF OBJECT_ID('Tempdb..##Doc','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Doc
+	END
+	IF OBJECT_ID('Tempdb..##DocConflict','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##DocConflict
+	END
+	IF OBJECT_ID('Tempdb..##DocHist','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##DocHist
+	END
+	IF OBJECT_ID('Tempdb..##DocNote','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##DocNote
+	END
+	IF OBJECT_ID('Tempdb..##TabNote','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##TabNote
+	END
+	IF OBJECT_ID('Tempdb..##DocSignOff','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##DocSignOff
+	END
+	IF OBJECT_ID('Tempdb..##NoteTo','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##NoteTo
+	END
+	IF OBJECT_ID('Tempdb..##TabNoteTo','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##TabNoteTo
+	END
+	IF OBJECT_ID('Tempdb..##SyncHist','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##SyncHist
+	END
+	IF OBJECT_ID('Tempdb..##Tab','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##Tab
+	END
+	IF OBJECT_ID('Tempdb..##TrialBalance','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##TrialBalance
+	END
+	IF OBJECT_ID('Tempdb..##KnowledgeCoach','U') IS NOT NULL
+	BEGIN
+		DROP TABLE ##KnowledgeCoach
+	END
+
+	--Copy Binder Information into Temporary Tables so we don't have to keep track of what bin the orginal binder is in nor do queries on tables that are going to grow really big
+	SELECT * INTO ##Binder FROM Binder WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Binder_Staff_Assigned FROM Binder_Staff_Assigned WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Binder_Staff_AltRightsGroup FROM Binder_Staff_AltRightsGroup WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Binder_Staff_SignOff FROM Binder_Staff_SignOff WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Binder_Team FROM Binder_Team WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##Prior FROM Prior WHERE bid = @Source_Binder_Guid
+	SELECT * INTO ##BinderHist FROM BinderHist WHERE bid = @Source_Binder_Guid
+	
+	SELECT @CMD = 'SELECT * INTO ##Doc FROM [' + @Current_Bin_DBName + ']..Doc WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##DocConflict FROM [' + @Current_Bin_DBName + ']..DocConflict WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##DocHist FROM [' + @Current_Bin_DBName + ']..DocHist WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##DocNote FROM [' + @Current_Bin_DBName + ']..DocNote WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##DocSignOff FROM [' + @Current_Bin_DBName + ']..DocSignOff WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##NoteTo FROM [' + @Current_Bin_DBName + ']..NoteTo WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##SyncHist FROM [' + @Current_Bin_DBName + ']..SyncHist WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##Tab FROM [' + @Current_Bin_DBName + ']..Tab WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##TabNote FROM [' + @Current_Bin_DBName + ']..TabNote WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##TabNoteTo FROM [' + @Current_Bin_DBName + ']..TabNoteTo WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	SELECT @CMD = 'SELECT * INTO ##TrialBalance FROM [' + @Current_Bin_DBName + ']..TrialBalance WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	ALTER TABLE ##TrialBalance ADD NewTrialBalanceGuid	UNIQUEIDENTIFIER NOT NULL DEFAULT (NEWID())
+	
+	SELECT @CMD = 'SELECT * INTO ##KnowledgeCoach FROM [' + @Current_Bin_DBName + ']..KnowledgeCoach WHERE bid = ''' + @Source_Binder_Guid + ''' AND lfrguid = ''' + @LFR_Guid + ''''
+	EXEC master..sp_executeSQL @CMD
+	ALTER TABLE ##KnowledgeCoach ADD NewKCBid	UNIQUEIDENTIFIER NOT NULL DEFAULT (NEWID())
+	
+	IF OBJECT_ID('tempdb..#ClientGroup','U') IS NOT NULL
+	BEGIN
+		DROP TABLE #ClientGroup
+	END
+	
+	CREATE TABLE #ClientGroup (
+		seqid			INT IDENTITY (1,1)
+		,ClientGroupGuid		UNIQUEIDENTIFIER
+	)
+	
+	INSERT INTO #ClientGroup ( 
+		ClientGroupGuid )
+	SELECT ClientGroupGuid
+	  FROM ClientGroup
+	 WHERE Name Like 'ClientGroup_%'
+	   AND IsNumeric(SUBSTRING(Name, 13, 1000)) = 1
+
+	SELECT @Current_Bin_Guid = ActiveBin FROM BinConfiguration
+	SELECT @Current_Bin_DBName = BinDBName FROM Bin WHERE BinGuid = @Current_Bin_Guid
+	SELECT @Client_Count = 0
+	SELECT @Bin_Binder_Count = COUNT(*) FROM Bin_Binder WHERE BinGuid = @Current_Bin_Guid
+	
+	WHILE @Client_Count < @Num_Clients
+	BEGIN
+		SELECT  @Client_Count =  @Client_Count + 1
+	
+		--Create a Client
+		SELECT @Current_Client_Guid = NEWID()
+	
+		INSERT INTO Client(clientguid, clientid, accams_acctnum, entitytypeid, busactivitycode, prospect, name, name2, sortname, fiscalyearend, primaryemail, secondaryemail, acquireddate, termdate, url, credithold, industrytypeid, fedempid, stateid, createddate, createdby, lastchangeddate, lastchangedby, staffpartner, staffmanager, systemmodifieddate, userid, password, dbflag)  
+		VALUES (@Current_Client_Guid, @Client_Index + LTRIM(STR(@Client_Count)), '', 1, '', '', @Client_Name + LTRIM(STR(@Client_Count)) + ':' + @Unique_Clientname_Suffix, '', '', 'Jan  1 1901 12:00AM', '', '', 'Jan  1 1901 12:00AM', 'Jan  1 1901 12:00AM', '', ' ', 0, '', '', GETUTCDATE(), @ADMIN_GUID, GETUTCDATE(), @ADMIN_GUID, @NULL_GUID, @NULL_GUID, GETUTCDATE(), '', '', 64)
+		
+		/*
+		**	Populate Client_ClientGroup
+		*/
+		SELECT @MaxSeqID = MAX(seqid)
+		  FROM #ClientGroup
+		
+		INSERT INTO Client_Clientgroup (
+			 ClientGuid       	,ClientGroupGuid  	,lastchangeddate  ,dbflag           
+		)
+		SELECT 
+			 @Current_Client_Guid   ,ClientGroupGuid  	,GETUTCDATE()  ,64           
+		  FROM #ClientGroup
+		 WHERE seqid = CAST(CEILING(RAND() * @MaxSeqID) AS INT)
+
+
+		INSERT INTO LFR_Client(lfrguid, clientguid) VALUES(@LFR_Guid, @Current_Client_Guid)
+		
+		Print 'Client Created: ' + @Client_Index + LTRIM(STR(@Client_Count)) + '-' + @Client_Name + LTRIM(STR(@Client_Count))+ ':' + @Unique_Clientname_Suffix
+	
+		SELECT @Client_Binder_Count = 0
+	
+		WHILE @Client_Binder_Count < @Num_Binders_Per_Client
+		BEGIN
+			SELECT @Client_Binder_Count = @Client_Binder_Count + 1
+			SELECT @Bin_Binder_Count = @Bin_Binder_Count + 1
+	
+			IF @Bin_Binder_Count >= @Num_Binders_Per_Bin AND @Num_Binders_Per_Bin != -1
+			BEGIN
+				SELECT @Bin_Binder_Count = 0
+	
+				SELECT @CMD = 'EXEC [' + @Current_Bin_DBName + ']..USPU_Bin_UpdateStatistics'
+				EXEC master..sp_executeSQL @CMD
+	
+				--Create a New Bin
+				SELECT @Current_Bin_Guid = NEWID()
+				EXEC @Error = dbo.USP_Admin_BinCreateBin @Current_Bin_Guid, '', @RetVal OUTPUT
+				IF @RetVal <> 0 OR @Error <> 0	
+				BEGIN
+					SELECT @ErrorMessage = 'Failed to Create a new bin.'
+					GOTO ScriptError
+				END
+				UPDATE Bin SET MaxBinders = @Num_Binders_Per_Bin WHERE BinGuid = @Current_Bin_Guid
+				SELECT @Current_Bin_DBName = BinDBName FROM Bin WHERE BinGuid = @Current_Bin_Guid
+				Print ''
+				Print 'New Bin Created: ' + @Current_Bin_DBName
+				Print ''
+			END
+	
+			--Create a Binder
+			SELECT @Current_Binder_Guid = NEWID()
+			SELECT @TempDate = GETUTCDATE()
+	
+			SELECT @Date_Offset = DATEDIFF(dd, dtcreated, @TempDate)
+			  FROM ##Binder
+	
+			INSERT INTO Binder (	
+				bid, 				lfrguid, 				pybid, 						clnt, 
+				rfbndguid, 			bndtemplateguid, 			cfrid, 						bndindex, 
+				name, 				title, 					bndtype, 					periodseqtypeid, 
+				yedate, 			begdate, 				enddate, 					periodnum, 
+				chrgcode, 			status, 				pwd, 						consolid, 
+				writeup, 			permbinder, 				leadpartner, 					dtcreated, 
+				createdby, 			dtdeliv, 				dtarchived, 					archivedby, 
+				archivedlocation, 		archivedfilename, 			dtfinalized, 					finalizedby, 
+				dbflag, 			lastchangeddate, 			firmguid, 					location, 
+				destCFR, 			finalizeversion, 			converteddate, 					FinancialStatmtsSubmitDate, 
+				dbflagex,			DCDPeriodStartDateTypeID, 		DCDPeriodDays, 					RetentionPeriodStartDateTypeID, 
+				RetentionPeriodYears,		DateOfReport,				ReportReleaseDate, 				DCD,	
+				DCDOverridden,			RetentionPeriodEndDate,			RetentionOverridden, 				DCDRLastChangedDate,
+				CustomStatus
+					)
+			SELECT @Current_Binder_Guid, 		lfrguid, 				pybid, 						@Current_Client_Guid, 
+				rfbndguid, 			bndtemplateguid, 			cfrid, 						@Binder_Index + LTRIM(Str(@Client_Binder_Count)), 
+				@Binder_Name + LTRIM(Str(@Client_Binder_Count)), 
+								title, 					bndtype, 					periodseqtypeid, 
+				yedate, 			begdate, 				enddate, 					periodnum, 
+				chrgcode, 			status, 				pwd, 						consolid, 
+				writeup, 			permbinder, 				leadpartner, 					@TempDate, 
+				@Source_Staff_Guid, 		dtdeliv, 				'1901-02-02 00:00:00.000', 			@NULL_GUID, 				
+				'', 				'', 					dtfinalized, 					finalizedby, 				
+				dbflag, 			@TempDate, 				firmguid, 					location, 				
+				@NULL_GUID, 			finalizeversion, 			NULL, 						'1901-02-02 00:00:00.000', 		
+				0, 				DCDPeriodStartDateTypeID, 		DCDPeriodDays, 					RetentionPeriodStartDateTypeID, 
+				RetentionPeriodYears,		DATEADD(dd,@Date_Offset,DateOfReport),	DATEADD(dd,@Date_Offset, ReportReleaseDate), 	DATEADD(dd,@Date_Offset,DCD),	
+				DCDOverridden,			DATEADD(dd,@Date_Offset,RetentionPeriodEndDate),	RetentionOverridden, 				@TempDate,
+				0
+			  FROM ##Binder
+	
+			INSERT INTO Bin_Binder 
+				(bid, 			BinGuid, 		LfrGuid, 		CreateDateTime, 
+				DBFlag
+			)
+			    VALUES (
+				@Current_Binder_Guid, 	@Current_Bin_Guid, 	@LFR_Guid, 		@TempDate, 
+				64
+			)
+	
+			INSERT INTO Binder_Staff_Assigned (bid, staffguid) 
+			SELECT @Current_Binder_Guid, staffguid FROM ##Binder_Staff_Assigned
+	
+			INSERT INTO Binder_Staff_AltRightsGroup (bid, staffguid, rights_no, lastchangeddate, dbflag)
+			SELECT @Current_Binder_Guid, staffguid, rights_no, lastchangeddate, dbflag FROM ##Binder_Staff_AltRightsGroup
+	
+			INSERT INTO Binder_Staff_Signoff (bid, staffguid, signoff, dtsignoff, lastchangeddate, dbflag) 
+			SELECT @Current_Binder_Guid, staffguid, signoff, dtsignoff, lastchangeddate, dbflag FROM ##Binder_Staff_Signoff
+	
+			INSERT INTO Binder_Team (bid, teamguid)
+			SELECT @Current_Binder_Guid, teamguid FROM ##Binder_Team
+	
+			INSERT INTO Prior (bid, periodnum, periodyear, yedate, pbdate, pedate, lastchangeddate, dbflag, lfrguid)
+			SELECT @Current_Binder_Guid, periodnum, periodyear, yedate, pbdate, pedate, lastchangeddate, dbflag, lfrguid FROM ##Prior
+	
+			INSERT INTO Binderhist (
+				 Bid             			,LfrGuid         ,BinderHistGuid  		,TranType        
+				,dtTran          			,PerformedBy     
+			)
+			SELECT 
+				 @Current_Binder_Guid			,lfrguid	 ,BinderHistGuid  		,TranType        
+				,DATEADD(dd, @Date_Offset, dtTran)     	,PerformedBy     
+			  FROM ##BinderHist
+	
+			--Copy Database Records
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..Binder (bid, lfrguid, pybid, clnt, rfbndguid, bndtemplateguid, cfrid, bndindex, name, title, bndtype, periodseqtypeid, yedate, begdate, enddate, periodnum, chrgcode, status, pwd, consolid, writeup, permbinder, leadpartner, dtcreated, createdby, dtdeliv, dtarchived, archivedby, archivedlocation, archivedfilename, dtfinalized, finalizedby, dbflag, lastchangeddate, firmguid, location, destCFR, finalizeversion, converteddate, FinancialStatmtsSubmitDate, dbflagex, CustomStatus) SELECT ''' + @Current_Binder_Guid + ''',  lfrguid, pybid, ''' + @Current_Client_Guid + ''', rfbndguid, bndtemplateguid, cfrid, ''' + @Binder_Index + LTRIM(Str(@Client_Binder_Count)) + ''', ''' + @Binder_Name + LTRIM(Str(@Client_Binder_Count)) + ''', title, bndtype, periodseqtypeid, yedate, begdate, enddate, periodnum, chrgcode, status, pwd, consolid, writeup, permbinder, leadpartner, ''' + Cast(@TempDate AS VARCHAR(36)) + ''', ''' + @Source_Staff_GUID + ''', dtdeliv, ''Jan 1 1901 8:00 AM'', ''' + @NULL_GUID + ''', '''', '''', dtfinalized, finalizedby, dbflag, ''' + Cast(@TempDate AS VARCHAR(36)) + ''', firmguid, location, ''' + @NULL_GUID + ''', finalizeversion, NULL, ''1901-02-02 00:00:00.000'', 0,0 FROM ##Binder'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..Tab (bid, LfrGuid, Tab, ParentTab, Name, TabIndex, Version, DBFlag, deleted, createdby, createddt, changedby, lastchangeddate) SELECT ''' + @Current_Binder_Guid + ''', LfrGuid, Tab, ParentTab, Name, TabIndex, Version, DBFlag, deleted, createdby, createddt, changedby, lastchangeddate FROM ##Tab'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..Doc (bid, LfrGuid, did, tab, ee_tbguid, indx, name, title, se_paid, se_seq, se_ruletype, se_status, ee_fileext, doctype, pwd, locked, rollforward, ee_rffilepath, dtcreated, createdby, deleted, dtdeleted, deletedby, dtmodified, modifiedby, checkoutby, checkoutlocation, assignto, signature, version, dbflag, se_grouplinkid, TB_ID, assigntolocation, freeze, assigntodate, KT_OpenedAfterRF, LiveEditor) SELECT ''' + @Current_Binder_Guid + ''', LfrGuid, did, tab, ee_tbguid, indx, name, title, se_paid, se_seq, se_ruletype, se_status, ee_fileext, doctype, pwd, locked, rollforward, ee_rffilepath, dtcreated, createdby, deleted, dtdeleted, deletedby, dtmodified, modifiedby, checkoutby, checkoutlocation, assignto, signature, version, dbflag, se_grouplinkid, TB_ID, assigntolocation, freeze, assigntodate, KT_OpenedAfterRF, ''' + @NULL_GUID + ''' FROM ##Doc'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..DocConflict (newdocguid, lastsyncwith, bid, LfrGuid, did, tab, ee_tbguid, indx, name, title, se_paid, se_seq, se_ruletype, se_status, ee_fileext, doctype, pwd, locked, rollforward, ee_rffilepath, dtcreated, createdby, deleted, dtdeleted, deletedby, dtmodified, modifiedby, checkoutby, checkoutlocation, assignto, signature, version, dbflag, se_grouplinkid, TB_ID, assigntolocation, freeze, assigntodate, KT_OpenedAfterRF, LiveEditor) SELECT newdocguid, lastsyncwith, ''' + @Current_Binder_Guid + ''', LfrGuid, did, tab, ee_tbguid, indx, name, title, se_paid, se_seq, se_ruletype, se_status, ee_fileext, doctype, pwd, locked, rollforward, ee_rffilepath, dtcreated, createdby, deleted, dtdeleted, deletedby, dtmodified, modifiedby, checkoutby, checkoutlocation, assignto, signature, version, dbflag, se_grouplinkid, TB_ID, assigntolocation, freeze, assigntodate, KT_OpenedAfterRF, ''' + @NULL_GUID + ''' FROM ##DocConflict'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..DocHist (dochistguid, bid, lfrguid, did, trantype, dttran, docname, docindex, performedby) SELECT dochistguid, ''' + @Current_Binder_Guid + ''', lfrguid, did, trantype, dttran, docname, docindex, performedby FROM ##DocHist'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..DocNote (docnoteguid, bid, lfrguid, did, response, docnotetypeid, subject, note, dtcreated, createdby, version, dbflag, location, lastchangeddate) SELECT docnoteguid, ''' + @Current_Binder_Guid + ''', lfrguid, did, response, docnotetypeid, subject, note, dtcreated, createdby, version, dbflag, location, lastchangeddate FROM ##DocNote'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..TabNote (tabnoteguid, bid, lfrguid, tab, response, tabnotetypeid, subject, note, dtcreated, createdby, version, dbflag, location, lastchangeddate) SELECT tabnoteguid, ''' + @Current_Binder_Guid + ''', lfrguid, tab, response, tabnotetypeid, subject, note, dtcreated, createdby, version, dbflag, location, lastchangeddate FROM ##TabNote'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..DocSignOff (bid, lfrguid, did, signofftypeid, signoffby, dtsignoff, disabled, lastchangeddate) SELECT ''' + @Current_Binder_Guid + ''', lfrguid, did, signofftypeid, signoffby, dtsignoff, disabled, lastchangeddate FROM ##DocSignOff'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..NoteTo (docnoteguid, staffguid, bid, lfrguid) SELECT docnoteguid, staffguid, ''' + @Current_Binder_Guid + ''', lfrguid FROM ##NoteTo'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..TabNoteTo (tabnoteguid, staffguid, bid, lfrguid) SELECT tabnoteguid, staffguid, ''' + @Current_Binder_Guid + ''', lfrguid FROM ##TabNoteTo'
+			EXEC master..sp_executeSQL @CMD
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..SyncHist (SyncHistGuid, bid, lfrguid, fileroomguid, lastsyncdate, successflag, initiatesource, fileroomtype, description) SELECT NEWID(), ''' + @Current_Binder_Guid + ''', lfrguid, fileroomguid, lastsyncdate, successflag, initiatesource, fileroomtype, description FROM ##SyncHist'
+			EXEC master..sp_executeSQL @CMD
+
+			UPDATE ##TrialBalance  SET NewTrialBalanceGuid = NEWID()			
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..TrialBalance (bid, lfrguid, did, TrialBalanceGuid) SELECT ''' + @Current_Binder_Guid + ''', lfrguid, did, NewTrialBalanceGuid FROM ##TrialBalance'
+			EXEC master..sp_executeSQL @CMD
+			EXEC TB_LocalAdmin..USP_TB_Admin_CopyMultipleTBs
+
+			UPDATE ##KnowledgeCoach SET NewKCBid = NEWID()
+			SELECT @CMD = 'SET NOCOUNT ON INSERT INTO [' + @Current_Bin_DBName + ']..KnowledgeCoach (bid, lfrguid, KCBid) SELECT ''' + @Current_Binder_Guid + ''', lfrguid, NewKCBid FROM ##KnowledgeCoach'
+			EXEC master..sp_executeSQL @CMD
+			EXEC KC_LocalAdmin..USP_KC_Admin_CopySingleBinder
+	
+			IF @CopyWorkpaperFiles = 1
+			BEGIN
+				--Copy the workpapers folder
+				SELECT @cmd = 'XCOPY /E/I/Q/Y "' + @LFRSharePath + '{{' + @Source_Binder_Guid + '}}" "' + @LFRSharePath + '{{' + @Current_Binder_Guid + '}}"'
+				EXEC master..xp_cmdshell @CMD
+			END
+	
+			Print '   Binder Created: ' +  @Binder_Index + LTRIM(STR(@Client_Binder_Count)) + '-' + @Binder_Name + LTRIM(STR(@Client_Binder_Count))
+		END
+	END
+	
+	SELECT @CMD = 'EXEC [' + @Current_Bin_DBName + ']..USPU_Bin_UpdateStatistics'
+	EXEC master..sp_executeSQL @CMD
+	
+	EXEC USPU_Admin_UpdateStatistics
+	
+	DROP TABLE ##Binder
+	DROP TABLE ##Binder_Staff_Assigned
+	DROP TABLE ##Binder_Staff_AltRightsGroup
+	DROP TABLE ##Binder_Staff_SignOff
+	DROP TABLE ##Binder_Team
+	DROP TABLE ##Prior
+	DROP TABLE ##BinderHist
+	
+	DROP TABLE ##Doc
+	DROP TABLE ##DocConflict
+	DROP TABLE ##DocHist
+	DROP TABLE ##DocNote
+	DROP TABLE ##DocSignOff
+	DROP TABLE ##NoteTo
+	DROP TABLE ##SyncHist
+	DROP TABLE ##Tab
+	DROP TABLE ##TabNote
+	DROP TABLE ##TabNoteTo
+	DROP TABLE ##TrialBalance
+	DROP TABLE ##KnowledgeCoach
+	Print 'Done!'
+	
+	GOTO Done
+	ScriptError:
+	Print 'Error: ' + @ErrorMessage
+	Done:
+END
+GO
+
+/*
+ * USAGE:
+ * EXEC USP_CreateBinders 
+ *    @Source_Binder_Guid, 			--(Required) - The Source Binder's Guid
+ *    @Source_Staff_Guid, 			--(Required) - The Source Staff's Guid
+ *    @Num_Clients, 				--(Required) - The Total Number of Clients to create
+ *    @Num_Binders_Per_Client, 			--(Required) - The Number of Binders to Create per Client
+ *    @Num_Binders_Per_Bin, 			--(Optional) Default: 3000      - The Number of Binders to Create per Bin (This does NOT affect the total number of binders created) to use only one bin give this a value of -1
+ *    @Unique_Clientname_Suffix,  		--(Optional) Default: '1'       - Unique Suffix to Use if running this script multiple times
+ *    @Client_Index, 				--(Optional) Default: ''        - Client Index, The Client Num will follow the Client Index
+ *    @Client_Name,				--(Optional) Default: 'Client_' - Client Name, The Client Num will follow the Client Name
+ *    @Binder_Index, 				--(Optional) Default: ''        - Binder Index, The Binder Num will follow the Binder Index
+ *    @Binder_Name, 				--(Optional) Default: 'Binder_' - Binder Name, The Binder Num will follow the Binder Name
+ *    @CopyWorkpaperFiles			--(Optional) Default: 1         - 1 = Copy Workpapers, 0 = do NOT copy Workpapers
+ *
+ * EXAMPLE 1
+ *   Creates 5 clients with 10 Copy's of the Binder with the Guid '00000000-0000-0000-0000-000000000000' in the staff's fileroom with staffguid = '420A97F0-7939-11D4-BD34-0050DAB66630'):
+ *
+ *   EXEC USP_CreateBinders '00000000-0000-0000-0000-000000000000', '420A97F0-7939-11D4-BD34-0050DAB66630', 5, 10
+ *
+ * EXAMPLE 2
+ *   Same as above, but the client suffix is 2, and workpaper files are not copied
+ *
+ *   EXEC USP_CreateBinders '00000000-0000-0000-0000-000000000000', '420A97F0-7939-11D4-BD34-0050DAB66630', 5, 10, @Unique_Clientname_Suffix = '2', @CopyWorkpaperFiles = 0
+ *
+ * You can call the Stored Procedure as many times as you want below with different binders
+ */				
+
+EXEC USP_CreateBinders 	'{0}', 	-- Source Binder guid
+			'{1}', 	-- Source Staff Guid
+			{2}, 						-- Number of clients
+			{3}, 						-- Number of Binders
+			@Unique_Clientname_Suffix = '0'
+
+-- Leave the Line below for cleanup!
+DROP PROCEDURE [dbo].[USP_CreateBinders]
+GO
+
+
+
+]]><Var Default=""><![CDATA[Binder Guid:]]></Var><Var Default="420A97F0-7939-11D4-BD34-0050DAB66630"><![CDATA[Staff Guid:]]></Var><Var Default=""><![CDATA[Number of Clients]]></Var><Var Default=""><![CDATA[Number of Binders per Client]]></Var></Query>
+    <Query Title="Test Query" Type="0" Index="4"><![CDATA[test text]]><Var Default="Test Default"><![CDATA[Test Message]]></Var></Query>
+  </Queries>
+  <Options>
+    <Defaults>
+      <Font name="Times New Roman" size="10.5" style="0000" />
+      <Connection instance="ProFxEngagement" machine="" user="sa" password="banglapur" />
+      <PlugPath path="" />
+    </Defaults>
+    <Plugins>
+    </Plugins>
+  </Options>
+  <Menus>
+    <QueryMenu>
+      <Item Title="Data Creation" Type="0" />
+      <Item Title="Admin/WM" Type="2" />
+      <Item Title="TB" Type="3" />
+      <Item Title="Knowledge Coach" Type="4" />
+      <Item Title="Utility" Type="1" />
+    </QueryMenu>
+  </Menus>
+  <Help>
+    <About author="Jon Reed" version="2.0" />
+    <Topic tid="0">Welcome</Topic>
+    <Topic tid="1">Queries</Topic>
+    <Topic tid="2">Comparisons</Topic>
+    <Topic tid="3">Exporting Data</Topic>
+    <Content title="Welcome" att="0">Welcome to Q-Lite 2.0</Content>
+    <Content title="Getting Started" att="0"><![CDATA[Getting started with Q-Lite.
+
+Q-Lite is a program designed to allow anyone to easily access most databases.
+
+Files included should be QLite.exe and QLite2.xml.
+
+There is no installation involved, simply copy the two files to where ever you want to store them. They just have to be in the same directory. Once you have the appropriate files simply launch the executable (.exe).
+]]></Content>
+    <Content title="Save a Simple Query" att="1"><![CDATA[Saving a simple query.
+
+To allow for any user to easily add frequently used to Queries to the menu options, a Save Query function has been added. This dialog can be accessed from the 'File' menu. If there is already a query open in a Query tab page it will pull that query into the Save Query dialog. The dialog also has a field that can be utilized to manually enter, or drag and drop a file containing the query to be saved.
+
+Simply select the 'File' menu, then select the 'Save Query' function, then select to save a 'Simply Query'. On the following dialog there will be 3 fields available.
+
+The first is the Menu selector which will allow you to decide which submenu to place the query.
+
+The second is the Title field, which will allow you to decide on a name for the query. This will also be the name displayed in the Query menu.
+
+The third is the Query text field. This field allows to user to enter their query to be saved in multiple ways. Either by manually typing it in, by dragging and dropping a file containing the SQL script, or by pasting it in from another program.
+
+Once all the neccessary information has been entered simply click the 'Save' button to commit the Query to the store or select 'Cancel' to cancel all opperation and return to the main screen.
+	]]></Content>
+    <Content title="Save a Variable Query" att="1"><![CDATA[Saving a variable query.
+	
+To allow for any user to easily add frequently used to Queries to the menu options, a Save Query function has been added. This dialog can be accessed from the 'File' menu. If there is already a query open in a Query tab page it will pull that query into the Save Query dialog. The dialog also has a field that can be utilized to manually enter, or drag and drop a file containing the query to be saved.
+
+Simply select the 'File' menu, then select the 'Save Query' function, then select to save a 'Variable Query'.
+
+A dialog will appear requesting information on how many inputs are going to be required for this query. Enter the number of inputs required by the user and select 'OK'.
+
+The next dialog will appear similar to the simple query dialog with the addition of a field on the left hand side containing inputs as requested by the previous dialog. Enter the Vars you wish the user to answer for the inputs. You can also enter in default answers for each Var by clicking the 'Set Default' button and entering the default to be applied.
+
+Once all input Vars and defaults are entered and the query has been loaded into the the Query field, you will need to locate the places where the users input is supposed to go. At the bottom of the dialog are two controls, an 'Insert' button and a numeric up and down selector. For each input denoted by the selector, click in the appropriate input place within the script and click 'Insert' to place the marker for that Vars input. You will need to adjust the selector and insert all other places for input by the user.
+
+Once all inputs have had Vars assigned and input markers inserted within the Query, simply click the 'Save' button to commit it to the Query store.
+
+	]]></Content>
+    <Content title="Add a Simple Query Manually" att="1"><![CDATA[Adding a Simple Query.
+
+The XML file accompanying the QLite executable contains all the information neccessary for the retention of highly used queries. Within the XML file you will see the root node !QLite! beneath that are for more nodes. The node titled !Queries! contains the data store for the Query Menu. To Add a new Query to the menu simply create a new node beneat the !Queryies! node titled !Query!. Give this node two attributes the first one being !Title! the second being !Type!. Set the !Title! attribute to equal whatever name you want displayed in the menu. Set the !type! attribute to the submenu you wish for it to appear under. Between the open and close tags enter your query. If it is a multi-line script you will need to encapsulate it within a CDATA tag.
+
+]]></Content>
+    <Content title="Add a Variable Query Manually" att="1"><![CDATA[Adding Query's with user input.
+
+For this kind of query you'll need to add the attribute "Vars" after the "type" attribute to the !Query! node, and set it to the number of input's you'll require from the user. To add a query to the XML that will require user input you'll need to modify the script slightly. Where you want the input to go within the query place array string markers such as {0}, {1}, {2} starting with zero and working your way up through all the Vars. If the script contains the '{' or '}' characters you need to qualify them by doubling them (ie: '{{' or '}}') in order to prevent the interpreter from thinking a variable should go there.
+
+After the script has been modified properly and copied to QLite.xml under it's appropriate node and CDATA tag. You can begin adding your Vars for variable input. After the CDATA close tag create a new node called !Var!. Give it the attribute 'default' and assign a default value. Then enter your Var text as the Node text.
+]]></Content>
+    <Content title="The Menu Attributes" att="0"><![CDATA[Expaining the Type attribute.
+
+The type attribute you apply to each query allows QLite to understand where you want it to appear in the Menu structure. This structure can be modified by changing the values of the QueryMenu node in QLite.xml. Currently the type associated in the XML doesn't directly affect Query placement, it's more of a reference guide. The type you enter for each query currently only determines what submenu it should be placed under. IE: type=0 is the first submenu, type=1 is the second submenu. You can add more submenu's simply by adding more Item nodes to the QueryMenu node and adjust type structure accordingly.
+]]></Content>
+    <Content title="Debugging" att="0"><![CDATA[Debugging Features.
+
+QLite contains the options to aid in debugging through the use of DebugView. To enable this ability start up QLite.exe with the parameter "DEBUG#" where # equals the level of debugging desires (values are 1 - 5). So to start QLite with a debug level of 3 you would go to Start->RUN - "%localpath%\qlite.exe debug3". 
+
+WARNING: debugging on level 5 can cause SIGNIFICANT slow down. Usually a level of 3 is sufficiant to troubleshoot most errors.
+]]></Content>
+    <Content title="Exporting Reports" att="3"><![CDATA[Exporting comparison results.
+	
+Should you wish to retain your comparison results for tables in a Database comparison, there is now a right click feature to enable this.
+
+After your database comparison finishes, simply Right Click on the button for the table you wish to save and select 'Export...'. A Save dialog will be displayed reqeusting the location and name that should be applied to the file when exported. After selecting both options click 'OK'.
+
+It's a simple as that. An Excel document will be created where you specified. Navigate to the location and double click (or select Open from within Excel) the file. Excel will throw a message stating that this is not a normal xls file. Go ahead and select 'Yes' to open. You will now see the results of the table comparison with the first machines table on the first worksheet and the secondary table on the second worksheet.
+	]]></Content>
+    <Content title="Saving Reports Manually" att="3"><![CDATA[Saving Reports.
+
+To save a query or comparison report all one need do is click on the upper left hand header box in the Datagrid displaying the desired results. Then select to copy using Ctrl+C. Next open the desired program with which to save in (notepad, Word, Excel, etc) and select to paste. If you are choosing to paste in to a Text format (notepad/word) it will be presented in a Tab deliminated format. If you are pasting into a Spreadsheet format it should auto adjust to paste cell per cell retaining the original formatting of the report.
+]]></Content>
+    <Content title="Adjusting Presets" att="0"><![CDATA[Auto Data entry for Dialogs.
+
+In order to facilitate the ability to bypass the data entry associated with the Machine Name, Instance Name, Login, and Password the included XML file has been made to function as a data retention tool as well. Inside you will find these options stored within the !Options! node. Beneath this node are the various options that can be utilized to bypass many of the manual data entry points. They should be listed with their various functions. To facilitate their usage simply apply the appropriate information for the various properties after the equals sign and contained within single quotes. For the Machine attribute there is the added function that if you choose to leave that field blank it will default to the current machine QLite is being ran on.
+]]></Content>
+    <Content title="Table Comparison" att="2"><![CDATA[Running a Table Comparison
+
+On the main screen select the 'Compare' toolbar button. This will open a dialog requesting the information neccessary to connect to the two machines containing the data to be compared. Select the 'Now Comparing' drop down menu and select the 'Tables' option. In the two toolbars provided below select the desired databases containing the desired tables from the 'Databases' drop down menu. Now select the desired tables from the 'Tables' drop down menu. Once all options have been set, select the 'Run Comparison' toolbar button. When the comparison is complete the results will display in the current tab.
+
+NOTE: Multiple single table comparisons can be run concurrently by utilizing multiple Compare tabs.
+ ]]></Content>
+    <Content title="Database Comparison" att="2"><![CDATA[Running a Database Comparison
+	
+On the main screen select the 'Compare' toolbar button. This will open a dialog requesting the information neccessary to connect to the two machines containing the data to be compared. In the two toolbars provided below select the desired databases containing the desired tables from the 'Databases' drop down menu. Once all options have been set, select the 'Run Comparison' toolbar button. When the comparison is complete the results will display in the current tab as a list of buttons of tables that were found to be inconsistent. Click on any of these buttons to open another window containing the inconsistent data for the comparison of the table listed on the button. You can open as many of these same windows as you wish concurrently.
+
+NOTE: Multiple database comparisons can be run concurrently by utilizing multiple Compare tabs.
+ ]]></Content>
+  </Help>
+</QLite>

@@ -1,0 +1,22 @@
+C:\Users\jon.reed\documents\visual studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Users\jon.reed\documents\visual studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\GenerateResource.read.1.tlog
+C:\Users\jon.reed\documents\visual studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\GenerateResource.write.1.tlog
+C:\Users\jon.reed\documents\visual studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Properties.Resources.resources
+C:\Users\jon.reed\documents\visual studio 2010\Projects\QLite V3\QLite V3\bin\Release\QLite V3.exe.config
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Controls.QueryUI.resources
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Release\QLite V3.exe
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Release\QLite V3.pdb
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite V3.exe
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite V3.pdb
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Forms.frmMain.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Controls.QueryUI.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Forms.Feedback.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Forms.frmMain.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Properties.Resources.resources
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\GenerateResource.read.1.tlog
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\GenerateResource.write.1.tlog
+C:\Documents and Settings\Jon\My Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite V3.exe
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Forms.Feedback.resources
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\bin\Release\QLite2.xml
+C:\Users\jon.reed\Documents\Visual Studio 2010\Projects\QLite V3\QLite V3\obj\x86\Release\QLite.Dialogs.ServerLogin.resources

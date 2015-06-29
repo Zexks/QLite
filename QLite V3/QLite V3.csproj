@@ -1,0 +1,293 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{59DF0D26-DA89-48A4-86F0-A7089DD617D9}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QLite</RootNamespace>
+    <AssemblyName>QLite V3</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\q2icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Collections\TabStyles\TabStyleAngledProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Collections\TabStyles\TabStyleChromeProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Collections\TabStyles\TabStyleDefaultProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Collections\TabStyles\TabStyleIE8Provider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Collections\TabStyles\TabStyleNoneProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Collections\TabStyles\TabStyleRoundedProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Collections\TabStyles\TabStyleVisualStudioProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Collections\TabStyles\TabStyleVS2010Provider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\QGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\QTabs.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\QTabs2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\QueryUI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\QueryUI.Designer.cs">
+      <DependentUpon>QueryUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ServerLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ServerLogin.Designer.cs">
+      <DependentUpon>ServerLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Engines\QControl.cs" />
+    <Compile Include="Engines\QExport.cs" />
+    <Compile Include="Engines\QQuery.cs" />
+    <Compile Include="Enumerations\TabStyle.cs" />
+    <Compile Include="Enumerations\TCHITTESTFLAGS.cs" />
+    <Compile Include="Events\Delegates.cs" />
+    <Compile Include="Events\EventArgs.cs" />
+    <Compile Include="Forms\Feedback.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Feedback.Designer.cs">
+      <DependentUpon>Feedback.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Objects\AutoComplete\AutoCompleteItem.cs" />
+    <Compile Include="Collections\QueryMenuItems.cs" />
+    <Compile Include="Controls\AutoCompleteListView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\AutoCompleteListView.Designer.cs">
+      <DependentUpon>AutoCompleteListView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AutoCompleteMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Objects\PrintDialogSettings.cs" />
+    <Compile Include="Objects\QTabs\ThemedColors.cs" />
+    <Compile Include="Objects\QTabs\NativeMethods.cs" />
+    <Compile Include="Objects\QTabs\TabStyleProvider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Objects\QText\ClearSelectedCommand.cs" />
+    <Compile Include="Objects\QText\Command.cs" />
+    <Compile Include="Objects\QText\CommandManager.cs" />
+    <Compile Include="Objects\QText\InsertCharCommand.cs" />
+    <Compile Include="Objects\QText\InsertTextCommand.cs" />
+    <Compile Include="Objects\QText\LimitedStack.cs" />
+    <Compile Include="Objects\QText\Line.cs" />
+    <Compile Include="Objects\QText\ReplaceTextCommand.cs" />
+    <Compile Include="Objects\QText\UndoableCommand.cs" />
+    <Compile Include="Objects\Query\Query.cs" />
+    <Compile Include="Objects\Query\QueryMenu.cs" />
+    <Compile Include="Controls\QMenuStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Enumerations\QueryMenuItemEnum.cs" />
+    <Compile Include="Forms\Help.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Help.Designer.cs">
+      <DependentUpon>Help.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Options.Designer.cs">
+      <DependentUpon>Options.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\QueryMgr.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\QueryMgr.Designer.cs">
+      <DependentUpon>QueryMgr.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Find.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Find.Designer.cs">
+      <DependentUpon>Find.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Replace.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Replace.Designer.cs">
+      <DependentUpon>Replace.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Objects\Query\QueryMenuItem.cs" />
+    <Compile Include="Engines\QDialog.cs" />
+    <Compile Include="Engines\QInfo.cs" />
+    <Compile Include="Engines\QMain.cs" />
+    <Compile Include="Engines\QSQL.cs" />
+    <Compile Include="Engines\QSyntax.cs" />
+    <Compile Include="Engines\QXML.cs" />
+    <Compile Include="Enumerations\CompareResults.cs" />
+    <Compile Include="Enumerations\IndentMarker.cs" />
+    <Compile Include="Enumerations\QAction.cs" />
+    <Compile Include="Enumerations\StyleIndex.cs" />
+    <Compile Include="Enumerations\VisibleState.cs" />
+    <Compile Include="Enumerations\WordWrapMode.cs" />
+    <Compile Include="Plugins\IPlugin.cs" />
+    <Compile Include="Plugins\IPluginHost.cs" />
+    <Compile Include="Plugins\PluginServices.cs" />
+    <Compile Include="QueryPlugin\IQuery.cs" />
+    <Compile Include="QueryPlugin\QueryPlugin.cs" />
+    <Compile Include="Objects\Query\QueryVariable.cs" />
+    <Compile Include="Objects\Syntax\FoldingDescriptor.cs" />
+    <Compile Include="Objects\Syntax\RuleDescriptor.cs" />
+    <Compile Include="Objects\Syntax\SyntaxDescriptor.cs" />
+    <Compile Include="Objects\QText\Range.cs" />
+    <Compile Include="Servers\Column.cs" />
+    <Compile Include="Servers\ColumnMap.cs" />
+    <Compile Include="Servers\Database.cs" />
+    <Compile Include="Servers\DatabaseMap.cs" />
+    <Compile Include="Servers\Row.cs" />
+    <Compile Include="Servers\Server.cs" />
+    <Compile Include="Forms\Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Main.Designer.cs">
+      <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Servers\Table.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controls\QText.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\QText.Designer.cs">
+      <DependentUpon>QText.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Servers\TableMap.cs" />
+    <Compile Include="Structures\Char.cs" />
+    <Compile Include="Structures\Defaults.cs" />
+    <Compile Include="Structures\PAINTSTRUCT.cs" />
+    <Compile Include="Structures\Place.cs" />
+    <Compile Include="Structures\QProcess.cs" />
+    <Compile Include="Objects\QText\Styles.cs" />
+    <Compile Include="Objects\VisualMarkers\CollapseFoldingMarker.cs" />
+    <Compile Include="Objects\VisualMarkers\ExpandFoldingMarker.cs" />
+    <Compile Include="Objects\VisualMarkers\FoldedAreaMarker.cs" />
+    <Compile Include="Objects\VisualMarkers\StyleVisualMarker.cs" />
+    <Compile Include="Objects\VisualMarkers\VisualMarkers.cs" />
+    <Compile Include="Structures\RECT.cs" />
+    <Compile Include="Structures\TSCHITTESTINGO.cs" />
+    <EmbeddedResource Include="Controls\QueryUI.resx">
+      <DependentUpon>QueryUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ServerLogin.resx">
+      <DependentUpon>ServerLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Feedback.resx">
+      <DependentUpon>Feedback.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Main.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\q2icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\closeBtn.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\closeBtnHover.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\closeInactiveBtn.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="QLite2.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
